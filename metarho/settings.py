@@ -100,6 +100,7 @@ EXTENSION_DIRS = (
     # This property needs to added to the python path for externals to work.
     # See README.txt for information.
     path.join(BASE_DIR, '../externals'),
+    path.join(BASE_DIR, '../../lib'),
 )
 
 # Adds my externals to my systempath.
