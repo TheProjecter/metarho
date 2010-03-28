@@ -1,0 +1,9 @@
+<div id="post-{{ post.id }}" class="postbrief">
+	<div id="post-{{ post.id }}-title">
+		<a href="{% url blog:post-detail post.pub_date.year,post.pub_date|date:"b",post.pub_date.day,post.slug %}">{{ post.title }}</a>
+	</div>
+{% include "blog/snippets/post_meta.xhtml" %}
+	<div id="post-{{ post.id }}-summary">
+		{{ post.content|safe|truncatewords_html:600 }}
+	</div>
+</div>

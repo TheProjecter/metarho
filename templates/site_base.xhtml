@@ -15,6 +15,7 @@
   {% block style %}
     <link rel="stylesheet" type="text/css" href="/sitemedia/style/html-elements.css" />
     <link rel="stylesheet" type="text/css" href="/sitemedia/style/layout.css" />
+    <link rel="stylesheet" type="text/css" href="/sitemedia/style/local.css" />
   {% endblock %}
 
 	{% block scripts %}
@@ -37,12 +38,25 @@
     	</div> <!-- /#header-inner -->
 	</div> <!-- /#header -->
 	
+	{% block navbar %}
+	<div id="navbar">
+		<div id="navbar-inner">
+			<a href="#navigation"></a>
+			<ul id="navlinks">
+			{% block navlinks %}
+				<li>Replace Me</li>
+			{% endblock %}
+			</ul>
+		</div>
+	</div>
+	{% endblock %}
+	
     <div id="main">
     	<div id="main-inner">
     	
     		{% block sidebar-left %}
             <div id="sidebar-left">
-                <div id="sidebar-left-inner" class="region region-left">
+                <div id="sidebar-left-inner">
                   {% block sidebar-left-blocks %}{% endblock %}
                 </div> <!-- /#sidebar-left-inner -->
              </div> <!-- /#sidebar-left -->

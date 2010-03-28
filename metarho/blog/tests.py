@@ -4,6 +4,8 @@ from datetime import timedelta
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
+from django.test.client import Client
 
 from metarho.blog.models import Post
 from metarho.blog.models import Tag
@@ -325,3 +327,44 @@ class WordPressExportParserTest(TestCase):
         topiccount = testpost.topics.all().count()
         expected = 1
         self.failUnlessEqual(expected, topiccount, 'Expected %s and returned %s topics.' % (expected, topiccount))
+        
+class ViewTest(TestCase):
+    '''
+    Tests the various views returned  by the app.
+    
+    user:  Julius
+    pw: hailme
+    email: ceasar@rome.org
+    
+    '''
+    
+    fixtures = ['loremfixtures.json']
+    
+    def setUp(self):
+        self.client = Client()
+    
+    def test_post_detail(self):
+        '''Tests individual entry return.'''
+        # Test a published post.
+        attrs = ['2009', 'Apr', '08', 'its-all-greek-to-you']
+        url = reverse('blog:post-detail', args=attrs)
+        expected = 200
+        code = self.client.get(url).status_code
+        self.failUnlessEqual(code, expected, 'Expected %s but returned %s for %s' % (expected, code, url))
+        
+        # Test a published post.
+        attrs = ['2010', 'Mar', '23', 'maecenas-varius']
+        url = reverse('blog:post-detail', args=attrs)
+        expected = 404
+        code = self.client.get(url).status_code
+        self.failUnlessEqual(code, expected, 'Expected %s but returned %s for %s' % (expected, code, url))
+        
+    def test_wp_redirect(self):
+        '''
+        Tests the wp_post_redirect decorator.
+        
+        '''
+        expected = 301
+        url = '?p=4'
+        code = self.client.get(url).status_code
+        self.failUnlessEqual(code, expected, 'Expected %s but returned %s for %s' % (expected, code, url))
