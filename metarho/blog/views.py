@@ -1,8 +1,6 @@
 import datetime
 import time
-from datetime import date
 
-from django.shortcuts import get_object_or_404
 from django.http import Http404
 
 from metarho.blog.decorators import wp_post_redirect

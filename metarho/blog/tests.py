@@ -368,3 +368,26 @@ class ViewTest(TestCase):
         url = '?p=4'
         code = self.client.get(url).status_code
         self.failUnlessEqual(code, expected, 'Expected %s but returned %s for %s' % (expected, code, url))
+        
+    def test_post_all(self):
+        '''Tests the default return of posts.'''
+        url = reverse('blog:index')
+        code = self.client.get(url).status_code
+        expected = 200
+        self.failUnlessEqual(code, expected, 'Expected %s but returned %s for %s' % (expected, code, url))
+        
+    def test_post_day(self):
+        '''Tests the return for a post day list.'''
+        attrs = ['2009', 'Apr', '08']
+        url = reverse('blog:list-day', args=attrs)
+        expected = 200
+        code = self.client.get(url).status_code
+        self.failUnlessEqual(code, expected, 'Expected %s but returned %s for %s' % (expected, code, url))
+        
+        # Test an unpublished one.
+        attrs = ['2010', 'Mar', '23']
+        url = reverse('blog:list-day', args=attrs)
+        expected = 1 # There are 2 but 1 is unpublished.
+        response = self.client.get(url)
+        posts = len(response.context['posts'])
+        self.failUnlessEqual(posts, expected, 'Expected %s posts but returned %s for %s' % (expected, posts, url))
