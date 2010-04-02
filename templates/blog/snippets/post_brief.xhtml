@@ -1,9 +1,23 @@
-<div id="post-{{ post.id }}" class="postbrief">
-	<div id="post-{{ post.id }}-title">
+<div id="post-{{ post.id }}" class="post-brief">
+	<div id="post-title-{{ post.id }}" class="post-title-brief">
 		<a href="{% url blog:post-detail post.pub_date.year,post.pub_date|date:"b",post.pub_date.day,post.slug %}">{{ post.title }}</a>
 	</div>
 {% include "blog/snippets/post_meta.xhtml" %}
-	<div id="post-{{ post.id }}-summary">
+	<div id="post-summary-{{ post.id }}" class="post-body-brief">
 		{{ post.content|safe|truncatewords_html:600 }}
+                <div id="post-footer-{{ post.id }" class="post-footer-brief">
+                    {% if post.tags.all %}
+                    Tags:
+                    {% for tag in post.tags.all %}
+                    <a href="{% url blog:post-tag tag.slug %}">{{ tag.text }}</a>{% ifnotequal forloop.revcounter0 0 %},{% endifnotequal %}
+                    {% endfor %}//
+                    {% endif %}
+                    {% if post.topics.all %}
+                    Topics:
+                    {% for topic in post.topics.all %}
+                        {{ topic.text }}{% ifnotequal forloop.revcounter0 0 %},{% endifnotequal %}
+                    {% endfor %}
+                    {% endif %}
+                </div>
 	</div>
 </div>

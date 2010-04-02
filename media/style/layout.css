@@ -1,24 +1,86 @@
 body {
-	background-color: black;
-	color: #e9e9e9;
+    color: #003333;
 }
 
-em { color: #d9e3ea }
+em { color: #af0000;
+    font-style: italic;
+}
 
 /* Headlines */
 h1, h2, h3 {
-	color: #6099ff;
+    color: #660000;
 }
 h4 {
-	color: #a3d5ea;
+    color: #a3d5ea;
+}
+h1.title {
+    margin-bottom: 10px;
+    display: block;
 }
 
 /* Navigation and Accessability Links */
 #skip-to {
-	position: absolute;
-	margin-left: -1000px;
+    position: absolute;
+    margin-left: -1000px;
 }
 
 #page {
-	margin: 10px 15px 15px;
+    margin: 10px 15px 15px;
+}
+
+/* Navbar */
+#navbar ul
+{
+    padding-left: 0;
+    margin-left: 0;
+    background-color: #036;
+    color: White;
+    float: left;
+    width: 100%;
+    font-family: arial, helvetica, sans-serif;
+}
+
+#navbar ul li { display: inline; }
+
+#navbar ul li a
+{
+    padding: 0.2em 1em;
+    background-color: #036;
+    color: White;
+    text-decoration: none;
+    float: left;
+    border-right: 1px solid #fff;
+}
+
+#navbar ul li a:hover
+{
+    background-color: #369;
+    color: #fff;
+}
+
+/* Classes */
+.post-brief {
+    margin-bottom: 15px;
+}
+.post-title-brief {
+    font-size: 130%;
+    font-weight: bold;
+}
+
+.post-body-brief {
+    margin: 5px 10px 0;
+}
+
+.post-title-brief a {
+    
+}
+
+.post-meta {
+    color: #666666;
+}
+
+.post-footer-brief {
+    font-size: 105%;
+    margin: 3px 0;
+    color: #cc3300;
 }

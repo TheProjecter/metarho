@@ -2,10 +2,13 @@ import datetime
 import time
 
 from django.http import Http404
+from django.shortcuts import get_object_or_404
 
 from metarho.blog.decorators import wp_post_redirect
 from metarho import render_with_context
 from metarho.blog.models import Post
+from metarho.blog.models import Tag
+from metarho.blog.models import Topic
 
 @wp_post_redirect
 def post_all(request):
@@ -65,4 +68,54 @@ def post_detail(request, year, month, day, slug):
     return render_with_context(request, 'blog/post_detail.xhtml', {
             'post': post,
             'title': post.title,                                     
+            })
+
+def post_topic(request, slug):
+    '''Returns all posts related to a topic.'''
+    topic = get_object_or_404(Topic, slug=slug)
+    posts = Post.objects.published().filter(topic__slug=slug)
+
+    return render_with_context(request, 'blog/post_list.xhtml', {
+            'posts': posts,
+            'title': 'Posts under %s' % topic.text,
+            })
+
+def post_tag(request, slug):
+    '''Returns all posts related to tags.'''
+    tag = get_object_or_404(Tag, slug=slug)
+    posts = Post.objects.published().filter(tags=tag)
+
+    return render_with_context(request, 'blog/post_list.xhtml', {
+            'posts': posts,
+            'title': 'Posts under tag "%s"' % tag.text,
+            })
+
+def post_topic(request, slug):
+    '''Returns all posts related to a topic.'''
+    topic = get_object_or_404(Topic, slug=slug)
+    posts = Post.objects.published().filter(topics=topic)
+
+    return render_with_context(request, 'blog/post_list.xhtml', {
+                'posts': posts,
+                'title': topic.text,
+            })
+
+def tag_list(request):
+    '''Displays all tags for posts.'''
+
+    tags = Tag.objects.published()
+
+    return render_with_context(request, 'blog/tag_list.xhtml', {
+            'tags': tags,
+            'title': 'Viewing Tags',
+           })
+
+def topic_list(request):
+    '''Displays a list of topics.'''
+
+    topics = Topic.objects.published()
+
+    return render_with_context(request, 'blog/topic_list.xhtml', {
+                'topics': topics,
+                'title': 'Topics'
             })

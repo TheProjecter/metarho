@@ -14,6 +14,7 @@ urlpatterns = patterns('',
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
+    url(r'^$', 'metarho.blog.views.post_all', name='site-index'),
     (r'^admin/', include(admin.site.urls)),
     (r'^', include("metarho.blog.urls", namespace="blog"))
 )

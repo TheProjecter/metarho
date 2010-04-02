@@ -391,3 +391,38 @@ class ViewTest(TestCase):
         response = self.client.get(url)
         posts = len(response.context['posts'])
         self.failUnlessEqual(posts, expected, 'Expected %s posts but returned %s for %s' % (expected, posts, url))
+
+    def test_post_tag(self):
+        '''Tests the tags list for posts.'''
+        
+        url = reverse('blog:post-tag', args=['ligula'])
+        expected = 200
+        response = self.client.get(url)
+        code = response.status_code
+        self.failUnlessEqual(expected, code, 'Expected %s but returned %s for %s' % (expected, code, url))
+        posts = len(response.context['posts'])
+        self.failUnlessEqual(1, posts, 'Expected %s but returned %s posts in %s' % (1, posts, url))
+
+    def test_tag_all(self):
+        '''Tests the return of the tags page.'''
+        url = reverse('blog:tag-list')
+        expected = 200
+        response = self.client.get(url)
+        code = response.status_code
+        self.failUnlessEqual(expected, code, 'Expected %s but returned %s for %s' % (expected, code, url))
+
+    def test_topic_all(self):
+        '''Tests the return of the topics page.'''
+        url = reverse('blog:topic-list')
+        expected = 302
+        response = self.client.get(url)
+        code = response.status_code
+        self.failUnlessEqual(expected, code, 'Expected %s but returned %s for %s' % (expected, code, url))
+
+    def test_post_topic(self):
+        '''Test the return of posts under a topic.'''
+        url = reverse('blog:post-topic', args=['consectetur-adipiscing'])
+        expected = 302
+        response = self.client.get(url)
+        code = response.status_code
+        self.failUnlessEqual(expected, code, 'Expected %s but returned %s for %s' % (expected, code, url))
