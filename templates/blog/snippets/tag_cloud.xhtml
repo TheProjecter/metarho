@@ -1,0 +1,18 @@
+{% comment %}
+    Creates a block listing tags in a cloud like structure.
+{% endcomment %}
+
+<div id="tag-cloud-block" class="block">
+    <div id="tag-cloud-block-inner" class="block-inner">
+    <h2>Tags</h2>
+        {% for tag in tags %}
+          <a href="{% url blog:post-tag tag.slug %}"
+          title="{{ tag.post_set.published.count }} posts"
+          style="font-size: {% widthratio tag.post_set.published.count tags.count 100 %}%">
+          {{ tag.text }}</a>
+        {% empty %}
+            No Tags Found.
+        {% endfor %}
+
+    </div> <!-- /tag-block-inner -->
+</div> <!-- /tag-block -->

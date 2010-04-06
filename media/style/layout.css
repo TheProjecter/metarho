@@ -28,6 +28,20 @@ h1.title {
     margin: 10px 15px 15px;
 }
 
+/* Content */
+#content {
+    display: block;
+    margin-left: 220px;
+}
+
+/* Sidebars */
+#sidebar-left {
+    display: block;
+    margin: 0 10px 0 10px;
+    width: 200px;
+    float: left;
+}
+
 /* Navbar */
 #navbar ul
 {

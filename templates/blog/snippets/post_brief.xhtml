@@ -4,18 +4,20 @@
 	</div>
 {% include "blog/snippets/post_meta.xhtml" %}
 	<div id="post-summary-{{ post.id }}" class="post-body-brief">
-		{{ post.content|safe|truncatewords_html:600 }}
+		{{ post.content|safe|truncatewords_html:300 }}
                 <div id="post-footer-{{ post.id }" class="post-footer-brief">
                     {% if post.tags.all %}
                     Tags:
                     {% for tag in post.tags.all %}
                     <a href="{% url blog:post-tag tag.slug %}">{{ tag.text }}</a>{% ifnotequal forloop.revcounter0 0 %},{% endifnotequal %}
-                    {% endfor %}//
+                    {% endfor %}
+                    &laquo;&raquo;
                     {% endif %}
                     {% if post.topics.all %}
                     Topics:
                     {% for topic in post.topics.all %}
-                        {{ topic.text }}{% ifnotequal forloop.revcounter0 0 %},{% endifnotequal %}
+                        <a href="{% url blog:post-topic topic.slug %}" title="{{ topic.description|striptags }}">
+                        {{ topic.text }}</a>{% ifnotequal forloop.revcounter0 0 %}, {% endifnotequal %}
                     {% endfor %}
                     {% endif %}
                 </div>

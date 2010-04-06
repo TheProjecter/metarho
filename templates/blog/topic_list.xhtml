@@ -5,11 +5,11 @@
 {% block content-body %}
 {% if topics %}
 {% for topic in topics %}
-    <div id="post-{{ topic.id }}" class="post-brief">
-            <div id="post-title-{{ topic.id }}" class="post-title-brief">
-                    <a href="{% url blog:topic-post topic.slug">{{ topic.text }}</a>
+    <div id="topic-{{ topic.id }}" class="post-brief">
+            <div id="topic-title-{{ topic.id }}" class="post-title-brief">
+                    <a href="{% url blog:post-topic topic.slug %}">{{ topic.text }}</a>
             </div>
-            <div id="post-summary-{{ post.id }}" class="post-body-brief">
+            <div id="topic-description-{{ post.id }}" class="post-body-brief">
                     {{ topic.description|safe }}
             </div>
     </div>

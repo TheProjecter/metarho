@@ -38,7 +38,7 @@ class TagManager(models.Manager):
         '''Only returns tags for published post of pub_date or earlier.'''
         if not pub_date:
             pub_date = datetime.now()
-        return self.filter(post__status=PUBLISHED_STATUS, post__pub_date__lte=pub_date, post__pub_date__isnull=False)
+        return self.filter(post__status=PUBLISHED_STATUS, post__pub_date__lte=pub_date, post__pub_date__isnull=False).distinct()
         
 class TopicManager(models.Manager):
     '''
@@ -49,7 +49,7 @@ class TopicManager(models.Manager):
         '''Only returns topics for published posts of pub_date or earlier.'''
         if not pub_date:
             pub_date = datetime.now()
-        return self.filter(post__status=PUBLISHED_STATUS, post__pub_date__lte=pub_date, post__pub_date__isnull=False)
+        return self.filter(post__status=PUBLISHED_STATUS, post__pub_date__lte=pub_date, post__pub_date__isnull=False).distinct()
 
 # MODELS
 
