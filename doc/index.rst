@@ -6,10 +6,14 @@
 Welcome to MetaRho's documentation!
 ===================================
 
+.. include:: ../metarho/README.rst
+
 Contents:
 
 .. toctree::
    :maxdepth: 2
+
+   blog
 
 Indices and tables
 ==================

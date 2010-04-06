@@ -9,6 +9,10 @@ if NOT "%PAPER%" == "" (
 	set ALLSPHINXOPTS=-D latex_paper_size=%PAPER% %ALLSPHINXOPTS%
 )
 
+REM adding project to path for introspection support.
+set PYTHONPATH=%PYTHONPATH%;../;../external/django-external
+set DJANGO_SETTINGS_MODULE=djangosettings
+
 if "%1" == "" goto help
 
 if "%1" == "help" (
