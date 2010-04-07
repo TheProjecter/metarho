@@ -7,6 +7,12 @@
 integrated with features for concurrent robust data publishing.
 
 Blog
--------
-.. autoclass:: metarho.blog.models.Post
+----
+
+.. automodule:: metarho.blog
    :members:
+
+Models & Managers
+^^^^^^^^^^^^^^^^^
+.. automodule:: metarho.blog.models
+   :members: Post, PostMeta, Tag, Topic, PostManager, TopicManager, TagManager

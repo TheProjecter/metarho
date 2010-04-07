@@ -24,7 +24,13 @@ class PostManager(models.Manager):
     '''
     
     def published(self, pub_date=None):
-        '''Only returns posts that are published and of pub_date or earlier.'''
+        '''
+        Only returns posts that are published and of pub_date or earlier.
+
+        :param pub_date: Posts with pub_date later than this are not considered
+                         published.
+
+        '''
         if not pub_date:
             pub_date = datetime.now()
         return self.filter(status=PUBLISHED_STATUS, pub_date__lte=pub_date, pub_date__isnull=False)
@@ -35,7 +41,13 @@ class TagManager(models.Manager):
     
     '''
     def published(self, pub_date=None):
-        '''Only returns tags for published post of pub_date or earlier.'''
+        '''
+        Only returns tags for published post of pub_date or earlier.
+
+        :param pub_date: Posts with pub_date later than this are not considered
+                         published.
+
+        '''
         if not pub_date:
             pub_date = datetime.now()
         return self.filter(post__status=PUBLISHED_STATUS, post__pub_date__lte=pub_date, post__pub_date__isnull=False).distinct()
@@ -46,7 +58,14 @@ class TopicManager(models.Manager):
     
     '''
     def published(self, pub_date=None):
-        '''Only returns topics for published posts of pub_date or earlier.'''
+        '''
+        Only returns topics for published posts of pub_date or earlier.
+
+        :param pub_date: Posts with pub_date later than this are not considered
+                         published.
+
+        '''
+        
         if not pub_date:
             pub_date = datetime.now()
         return self.filter(post__status=PUBLISHED_STATUS, post__pub_date__lte=pub_date, post__pub_date__isnull=False).distinct()
