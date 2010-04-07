@@ -82,7 +82,14 @@ class Tag(models.Model):
     text = models.CharField(max_length=30, unique=True)
     slug = models.SlugField(max_length=30, unique=True)
     objects = TagManager()
-    
+
+    def weight(self):
+        '''Returns the percent of posts this tag applies to.'''
+        post_total = Post.objects.published().count()
+        tag_total = Post.objects.published().filter(tags=self.text).count()
+
+        return tag_total/post_total
+
     def save(self, force_insert=False, force_update=False):
         '''
         Custom save method to handle slugs and such.

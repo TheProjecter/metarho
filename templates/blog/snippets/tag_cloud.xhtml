@@ -8,8 +8,8 @@
         {% for tag in tags %}
           <a href="{% url blog:post-tag tag.slug %}"
           title="{{ tag.post_set.published.count }} posts"
-          style="font-size: {% widthratio tag.post_set.published.count tags.count 100 %}%">
-          {{ tag.text }}</a>
+          style="font-size: {{ tag.weight|add:"100" }}%">
+          {{ tag.text }}</a>{% ifnotequal forloop.revcounter0 0 %}, {% endifnotequal %}
         {% empty %}
             No Tags Found.
         {% endfor %}
