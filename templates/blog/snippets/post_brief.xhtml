@@ -16,8 +16,8 @@
                     {% if post.topics.all %}
                     Topics:
                     {% for topic in post.topics.all %}
-                        <a href="{% url blog:post-topic topic.slug %}" title="{{ topic.description|striptags }}">
-                        {{ topic.text }}</a>{% ifnotequal forloop.revcounter0 0 %}, {% endifnotequal %}
+                        <a href="{% url blog:post-topic topic.path %}" title="{{ topic.description|striptags }}">
+                        {{ topic }}</a>{% ifnotequal forloop.revcounter0 0 %}, {% endifnotequal %}
                     {% endfor %}
                     {% endif %}
                 </div>

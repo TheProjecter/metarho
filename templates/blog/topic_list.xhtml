@@ -7,7 +7,7 @@
 {% for topic in topics %}
     <div id="topic-{{ topic.id }}" class="post-brief">
             <div id="topic-title-{{ topic.id }}" class="post-title-brief">
-                    <a href="{% url blog:post-topic topic.slug %}">{{ topic.text }}</a>
+                    <a href="{% url blog:post-topic topic.path %}">{{ topic.text }}</a>
             </div>
             <div id="topic-description-{{ post.id }}" class="post-body-brief">
                     {{ topic.description|safe }}

@@ -73,14 +73,14 @@ def post_detail(request, year, month, day, slug):
             })
 
 # Topics and Tags Views
-def post_topic(request, slug):
+def post_topic(request, path):
     '''Returns all posts related to a topic.'''
-    topic = get_object_or_404(Topic, slug=slug)
+    topic = get_object_or_404(Topic, path=path)
     posts = Post.objects.published().filter(topics=topic)
 
     return render_with_context(request, 'blog/post_list.xhtml', {
                 'posts': posts,
-                'title': topic.text,
+                'title': topic,
             })
 
 def post_tag(request, slug):
@@ -149,4 +149,12 @@ def post_topic_day(request, slug, year, month, day):
     return render_with_context(request, 'blog/post_list.xhtml', {
             'posts': posts,
             'title': 'Posts under %s for %s' % (topic.text, date.strftime("%A, %d %B %Y")),
+            })
+
+def archive_list(request):
+    '''Returns a list of months by year with published posts.'''
+    dates = Post.objects.published().order_by('pub_date').dates('pub_date', 'month')
+    return render_with_context(request, 'blog/archive_list.xhtml', {
+            'dates': dates,
+            'title': 'Post Archive',
             })

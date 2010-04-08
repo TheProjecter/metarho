@@ -3,6 +3,6 @@ Creates a nav menu style output of topics.
 {% endcomment %}
 {% block navlinks %}
     {% for topic in topics %}
-    <li><a href="{% url blog:post-topic topic.slug %}" title="{{ topic.description|striptags }}">{{ topic.text }}</a></li>
+    <li><a href="{% url blog:post-topic topic.path %}" title="{{ topic.description|striptags }}">{{ topic.text }}</a></li>
     {% endfor %}
 {% endblock %}

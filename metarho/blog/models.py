@@ -80,7 +80,7 @@ class Tag(models.Model):
     '''
     
     text = models.CharField(max_length=30, unique=True)
-    slug = models.SlugField(max_length=30, unique=True)
+    slug = models.SlugField(max_length=30, unique=True, null=True, blank=True)
     objects = TagManager()
 
     def weight(self):
@@ -116,9 +116,27 @@ class Topic(models.Model):
     text = models.CharField(max_length=75)
     parent = models.ForeignKey('self', null=True, blank=True) # Enable topic structures.
     description = models.TextField(null=True, blank=True)
-    slug = models.CharField(max_length=75)
+    # Can be null and blank because it will get auto generated on save if so.
+    slug = models.CharField(max_length=75, null=True, blank=True)
+    path = models.CharField(max_length=255)
+
+    # Custom manager for returning published posts.
     objects = TopicManager()
-    
+
+    def get_path(self):
+        '''
+        Constructs the path value for this topic based on hierarchy.
+        
+        '''
+        ontology = []
+        target = self.parent
+        while(target is not None):
+           ontology.append(target.slug)
+           target = target.parent
+        ontology.append(self.slug)
+        return '/'.join(ontology)
+
+
     def save(self, force_insert=False, force_update=False):
         '''
         Custom save method to handle slugs and such.
@@ -131,22 +149,30 @@ class Topic(models.Model):
         # Raise validation error if trying to create slug duplicate under parent.
         if Topic.objects.exclude(pk=self.pk).filter(parent=self.parent, slug=self.slug):
             raise ValidationError("Slugs cannot be duplicated under the same parent topic.")
+
+        self.path = self.get_path() # Rebuild the path attribute whenever saved.
      
         super(Topic, self).save(force_insert, force_update) # Actual Save method.
 
     def __unicode__(self):
-        return self.text
+        '''Returns the name of the Topic as a it's chained relationship.'''
+        ontology = []
+        target = self.parent
+        while(target is not None):
+           ontology.append(target.text)
+           target = target.parent
+        ontology.append(self.text)
+        return ' - '.join(ontology)
 
     class Meta:
-        verbose_name_plural = "categories"
-        ordering = ['text']
-        unique_together = (('text', 'parent'))
+        ordering = ['path']
+        unique_together = (('slug', 'parent'))
 
 class Post(models.Model):
     '''Blog Entries'''
 
     title = models.CharField(max_length=75)
-    slug = models.SlugField(max_length=75, null=True, unique_for_date='pub_date')
+    slug = models.SlugField(max_length=75, null=True, blank=True, unique_for_date='pub_date')
     author = models.ForeignKey(User)
     content = models.TextField(null=True)
     teaser = models.TextField(null=True, blank=True)

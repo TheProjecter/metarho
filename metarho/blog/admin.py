@@ -17,7 +17,7 @@ class PostAdmin(admin.ModelAdmin):
     '''
     search_fields = ['title']
     list_display = ('title', 'status')
-    list_filter = ('status', 'pub_date', 'author')
+    list_filter = ('status', 'pub_date', 'author', 'topics')
     inlines = [PostMetaInline,]
     
     class Media:
