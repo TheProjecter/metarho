@@ -1,3 +1,5 @@
+import mimeparse.py
+
 MIME_TYPE = {
     'rss': ['application/rss+xml', 'text/xml'],
     'json': ['application/json', 'text/json'],

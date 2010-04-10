@@ -3,3 +3,4 @@ glob:db/*.db
 glob:metarho/localsettings.py
 glob:externals/pagination/*
 glob:doc/_build/*
+glob:externals/mimeparse.py
