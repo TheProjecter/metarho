@@ -189,7 +189,7 @@ class Post(models.Model):
     @models.permalink
     def get_absolute_url(self):
         '''Get projects url.'''
-        return reverse('post_detail', args=[self.pub_date.year, self.pud_date.month, self.pub_date.day, self.slug])
+        return reverse('blog:post-detail', args=[self.pub_date.year, self.pud_date.month, self.pub_date.day, self.slug])
 
     def __unicode__(self):
         return self.title

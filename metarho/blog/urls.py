@@ -1,4 +1,5 @@
 from django.conf.urls.defaults import *
+from metarho.blog.feeds import LatestPostsFeedAtom
 
 urlpatterns = patterns('metarho.blog.views',
     url(r'^(?P<year>\d{4})/(?P<month>\w{3})/(?P<day>\d{1,2})/(?P<slug>[0-9A-Za-z-]+)/$', 'post_detail', name='post-detail'),  
@@ -11,4 +12,5 @@ urlpatterns = patterns('metarho.blog.views',
     url(r'^topic/(?P<path>.*)$', 'post_topic', name='post-topic'),
     url(r'^archive/$', 'archive_list', name='archive-list'),
     url(r'^/?$', 'post_all', name='index'),
+    url(r'^atom/$', 'post_all_feed', name="index-feed"),
 )
