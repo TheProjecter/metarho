@@ -1,11 +1,32 @@
-from django.contrib.syndication.feeds import Feed
+from datetime import date
+
+from django.http import Http404
+from django.http import HttpResponse
+from django.contrib.syndication import feeds
 from django.utils import feedgenerator
 from django.core.urlresolvers import reverse
 
 
 from metarho.blog.models import Post
 
-class LatestPostsFeed(Feed):
+def feed_render(feed):
+    '''
+    Creates a Feed and returns it as an HttpResponse or throws an error.
+    
+    :parm feed: Feed object to attempt to render.
+    
+    '''
+    try: # Try to create the feed or throw an error if it doesn't exist.
+        feedgen =feed.get_feed('')
+    except feeds.FeedDoesNotExist:
+        raise Http404, 'Invalid parameters.  A feed exists for %s but the parameters passed are incorrect.' % feed.link
+
+    # Good to Go!  Create the feed as a response.
+    response = HttpResponse(mimetype=feedgen.mime_type)
+    feedgen.write(response, 'utf-8')
+    return response
+
+class PostsFeed(feeds.Feed):
     '''
     Returns the latests posts in RSS format.
     
@@ -20,23 +41,38 @@ class LatestPostsFeed(Feed):
 
     # These have alternate ways they can be called in a feed.  See `Django
     # Syndication Famework <http://docs.djangoproject.com/en/dev/ref/contrib/syndication/>`
-    title = "I need a title"
-    link = "/sitenews/"
-    description = "Updates on changes and additions to chicagocrime.org."
+    title = "Title Not Set"
+    link = "Link Not Set"
+    description = "Description Not Set"
     author_name = 'Scott Turnbull'
+    items = None
     author_email = 'streamweaver@flagonwiththedragon.com' # Hard-coded author e-mail.
     author_link = 'http://www.flagonwiththedragon.com' # Hard-coded author URL.
-    feed_copyright = 'Copyright (c) 2007, Sally Smith' # Hard-coded copyright notice.
-    item_copyright = feed_copyright
     ttl = 600 # Hard-coded Time To Live.
 
-    def items(self):
-        """
-        Returns a list of items to publish in this feed.
+    def feed_copyright(self):
+        '''Generates the Copyright Statement for the Feed.'''
 
-        """
-        posts = Post.objects.published().order_by('-pub_date')
-        return posts[:10]
+        statement = """
+        Copyright (c) 2001 - %s Flagon With The Dragon.
+
+        Except where otherwise noted Creative Commons Attribution
+        Non-Commercial Share Alike 3.0 License.
+        """  % (date.today().year,)
+
+        return statement
+
+    def item_copyright(self, item):
+        '''Returns Individual Item Copyright Statements.'''
+
+        statement = """
+        Copyright (c) %s Flagon With The Dragon.
+
+        Except where otherwise noted Creative Commons Attribution
+        Non-Commercial Share Alike 3.0 License.
+        """  % (item.pub_date.year,)
+
+        return statement
 
     def item_title(self, item):
         """
@@ -104,7 +140,7 @@ class LatestPostsFeed(Feed):
         cats = [topic.text for topic in item.topics.published()]
         return cats.extend([tag.text for tag in item.tags.published()])
 
-class LatestPostsFeedAtom(LatestPostsFeed):
+class PostsFeedAtom(PostsFeed):
 
     feed_type = feedgenerator.Atom1Feed
-    subtitle = LatestPostsFeed.description
+    subtitle = PostsFeed.description

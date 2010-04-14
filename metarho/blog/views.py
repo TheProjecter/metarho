@@ -5,13 +5,15 @@ from django.http import Http404
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.contrib.syndication import feeds
+from django.core.urlresolvers import reverse
 
 from metarho.blog.decorators import wp_post_redirect
 from metarho import render_with_context
 from metarho.blog.models import Post
 from metarho.blog.models import Tag
 from metarho.blog.models import Topic
-from metarho.blog.feeds import LatestPostsFeedAtom
+from metarho.blog.feeds import PostsFeedAtom
+from metarho.blog.feeds import feed_render
 
 # All Posts List Methods.
 @wp_post_redirect
@@ -27,15 +29,13 @@ def post_all(request):
 def post_all_feed(request):
     '''Returns a Feed for all posts'''
 
-    try: # Try to create the feed or throw an error if it doesn't exist.
-        feedgen = LatestPostsFeedAtom('myslug', request).get_feed('')
-    except feeds.FeedDoesNotExist:
-        raise Http404, 'Invalid parameters.  A feed exists for %s but the parameters passed are incorrect.' % slug
+    feed = PostsFeedAtom('myslug', request)
+    feed.title = 'Flagon With The Dragon'
+    feed.subtitle = "Streamweaver's Pellet of Poison."
+    feed.link = reverse('blog:index')
+    feed.items = Post.objects.published().order_by('-pub_date')
 
-    # Good to Go!  Create the feed as a response.
-    response = HttpResponse(mimetype=feedgen.mime_type)
-    feedgen.write(response, 'utf-8')
-    return response
+    return feed_render(feed)
     
 def post_year(request, year):
     '''Returns all posts for a particular year.'''
