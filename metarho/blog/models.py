@@ -168,12 +168,33 @@ class Topic(models.Model):
         ordering = ['path']
         unique_together = (('slug', 'parent'))
 
+class Publication(models.Model):
+    '''
+    This sets up a Publication that posts are related to.  The term Publication 
+    is intentially vague and can mean a Blog, Column or something else. 
+    
+    '''
+    title = models.CharField(max_length=75)
+    slug = models.SlugField(max_length=75, unique=True, blank=True)
+    owner = models.ForeignKey(User)
+    description = models.TextField(null=True, blank=True)
+    copyright = models.TextField(null=True, blank=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    def save(self, force_insert=False, force_update=False):
+        '''Custom save method slugifies the title if one is not created.'''
+        if not self.slug:
+             unique_slugify(self, self.title)
+        super(Publication, self).save(force_insert, force_update)
+
 class Post(models.Model):
     '''Blog Entries'''
 
     title = models.CharField(max_length=75)
+    # @TODO Make slug unique for publication on date.
     slug = models.SlugField(max_length=75, null=True, blank=True, unique_for_date='pub_date')
     author = models.ForeignKey(User)
+    publication = models.ForeignKey(Publication)
     content = models.TextField(null=True)
     teaser = models.TextField(null=True, blank=True)
     pd_help = 'Date to publish.'
