@@ -118,7 +118,7 @@ class Topic(models.Model):
     description = models.TextField(null=True, blank=True)
     # Can be null and blank because it will get auto generated on save if so.
     slug = models.CharField(max_length=75, null=True, blank=True)
-    path = models.CharField(max_length=255)
+    path = models.CharField(max_length=255, blank=True)
 
     # Custom manager for returning published posts.
     objects = TopicManager()
@@ -166,7 +166,7 @@ class Topic(models.Model):
 
     class Meta:
         ordering = ['path']
-        unique_together = (('slug', 'parent'))
+        unique_together = (('slug', 'parent'), ('text', 'parent'))
 
 class Publication(models.Model):
     '''
@@ -180,6 +180,10 @@ class Publication(models.Model):
     description = models.TextField(null=True, blank=True)
     copyright = models.TextField(null=True, blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        '''Return the title of the publication by default.'''
+        return self.title
 
     def save(self, force_insert=False, force_update=False):
         '''Custom save method slugifies the title if one is not created.'''

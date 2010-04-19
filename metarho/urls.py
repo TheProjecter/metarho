@@ -6,14 +6,6 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Example:
-    # (r'^flagonwiththedragon/', include('flagonwiththedragon.foo.urls')),
-
-    # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
-    # to INSTALLED_APPS to enable admin documentation:
-    # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
     url(r'^$', 'metarho.blog.views.post_all', name='site-index'),
     (r'^admin/', include(admin.site.urls)),
     (r'^', include("metarho.blog.urls", namespace="blog"))

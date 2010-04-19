@@ -10,6 +10,7 @@ from django.test.client import Client
 from metarho.blog.models import Post
 from metarho.blog.models import Tag
 from metarho.blog.models import Topic
+from metarho.blog.models import Publication
 from metarho.blog.importer import WordPressExportParser
 
 # CUSTOM MANAGER TESTS
@@ -17,35 +18,36 @@ from metarho.blog.importer import WordPressExportParser
 class PostManagerTest(TestCase):
     '''Tests methods related to the custom post manager.'''
     
-    fixtures = ['auth.json', 'blog.json']
+    fixtures = ['loremauth.json', 'loremblog.json']
     
     def setUp(self):
         # Define a default users.
+        self.pub = Publication.objects.get(pk=1)
         self.author = User(username='Fakeuser', email='fakeuser@email.com')
         self.author.save()
     
     def test_published(self):
         '''Tests that only published posts are returned.'''
         actual = Post.objects.all().count()
-        expected = 3 # 3 total posts of all status
+        expected = 4 # 3 total posts of all status
         self.failUnlessEqual(expected, actual, 'Expected %s posts and returned %s!' % (expected, actual))
 
         actual = Post.objects.published().count()
-        expected = 1 # Only one published.
+        expected = 2 # Only one published.
         self.failUnlessEqual(expected, actual, 'Expected %s posts and returned %s!' % (expected, actual))
 
         # Create a new post with a future publish date
-        p = Post(title='test', content='test', status='P')
+        p = Post(title='test', content='test', status='P', publication=self.pub)
         p.author = self.author
         p.save()
         actual = Post.objects.published().count()
-        expected = 2 # Pubdate defaults to now.
+        expected = 3 # Pubdate defaults to now.
         self.failUnlessEqual(expected, actual, 'Expected %s posts and returned %s!' % (expected, actual))
 
         p.pub_date = datetime.now() + timedelta(days=1)
         p.save()
         actual = Post.objects.published().count()
-        expected = 1 # Should now be 1 with postdated pub_date.
+        expected = 2 # Should now be 1 with postdated pub_date.
         self.failUnlessEqual(expected, actual, 'Expected %s posts and returned %s!' % (expected, actual))
 
 class TagManagerTest(TestCase):
@@ -54,49 +56,57 @@ class TagManagerTest(TestCase):
     
     '''
     
-    fixtures = ['auth.json', 'blog.json']
+    fixtures = ['loremauth.json', 'loremblog.json']
     
     def setUp(self):
         '''Setup some related objects to test.'''
+        self.pub = Publication.objects.get(slug='despotic-times')
         self.author = User(username='Fakeuser', email='fakeuser@email.com')
         self.author.save()
+
+        # Create 2 new tags for testing.
+        tag1 = Tag(text='test this tag 1')
+        tag1.save()
+        tag2 = Tag(text='test this tag 2')
+        tag2.save()
+
         # postdated post to test
-        self.pd = Post(title='post dated', content='test', status='P', author=self.author)
+        self.pd = Post(title='post dated', content='test', status='P', author=self.author, publication=self.pub)
         self.pd.pub_date = datetime.now() + timedelta(days=1)
         self.pd.author = self.author
         self.pd.save()
-        self.pd.tags.add(Tag.objects.get(slug='funny'))
+        self.pd.tags.add(tag1)
         self.pd.save()
-        # un post to test.
-        self.up = Post(title='un', content='test', status='U', author=self.author)
+        # unpublished post to test.
+        self.up = Post(title='unpublished', content='test', status='U', author=self.author, publication=self.pub)
         self.up.author = self.author
         self.up.save()
-        self.up.tags.add(Tag.objects.get(slug='cats'))
+        self.up.tags.add(tag2)
         self.up.save()    
         
-    def test_(self):
+    def test_tags(self):
         '''Make sure only tags related to  posts appear.'''
         # Test all Tags first
-        expected = 30
+        expected = 12 # original 10 plus the 2 I added.
         actual = Tag.objects.all().count()
         self.failUnlessEqual(expected, actual, 'Expected %s total tags and returned %s' % (expected, actual))
         
         # Test tags for  posts.
-        expected = 1
+        expected = 4
         actual = Tag.objects.published().count()
         self.failUnlessEqual(expected, actual, 'Expected %s  tags and returned %s' % (expected, actual))
 
         # Set pd pub_date to now.
         self.pd.pub_date = datetime.now()
         self.pd.save()
-        expected = 2
+        expected = 5 # Tag1 should now be active.
         actual = Tag.objects.published().count()
         self.failUnlessEqual(expected, actual, 'Expected %s  tags and returned %s' % (expected, actual))
 
-        # Set up to  and should now be 3
+        # Set unpublished to and should now be 3
         self.up.status = 'P'
         self.up.save()
-        expected = 3
+        expected = 6 # Tag2 should now be active.
         actual = Tag.objects.published().count()
         self.failUnlessEqual(expected, actual, 'Expected %s  tags and returned %s' % (expected, actual))
 
@@ -106,11 +116,12 @@ class TopicManagerTest(TestCase):
     
     '''
     
-    fixtures = ['auth.json', 'blog.json']
+    fixtures = ['loremauth.json', 'loremblog.json']
     
     def setUp(self):
         '''Setup some related objects to test.'''
         # Add some more topics to test.
+        self.pub = Publication.objects.get(slug='despotic-times')
         self.t1 = Topic(text='Test1')
         self.t1.save()
         self.t2 = Topic(text='Test2')
@@ -119,14 +130,14 @@ class TopicManagerTest(TestCase):
         self.author = User(username='Fakeuser', email='fakeuser@email.com')
         self.author.save()
         # postdated post to test
-        self.pd = Post(title='post dated', content='test', status='P', author=self.author)
+        self.pd = Post(title='post dated', content='test', status='P', author=self.author, publication=self.pub)
         self.pd.pub_date = datetime.now() + timedelta(days=1)
         self.pd.author = self.author
         self.pd.save()
         self.pd.topics.add(self.t1)
         self.pd.save()
         # un post to test.
-        self.up = Post(title='un', content='test', status='U', author=self.author)
+        self.up = Post(title='un', content='test', status='U', author=self.author, publication=self.pub)
         self.up.author = self.author
         self.up.save()
         self.up.topics.add(self.t2)
@@ -135,26 +146,26 @@ class TopicManagerTest(TestCase):
     def test_(self):
         '''Make sure only topics related to  posts appear.'''
         # Test all Tags first
-        expected = 3
+        expected = 6 # original 4 plus 2 I added
         actual = Topic.objects.all().count()
         self.failUnlessEqual(expected, actual, 'Expected %s total topics and returned %s' % (expected, actual))
         
         # Test tags for  posts.
-        expected = 1
+        expected = 2
         actual = Topic.objects.published().count()
         self.failUnlessEqual(expected, actual, 'Expected %s  topics and returned %s' % (expected, actual))
 
         # Set pd pub_date to now.
         self.pd.pub_date = datetime.now()
         self.pd.save()
-        expected = 2
+        expected = 3
         actual = Topic.objects.published().count()
         self.failUnlessEqual(expected, actual, 'Expected %s  topics and returned %s' % (expected, actual))
 
         # Set up to  and should now be 3
         self.up.status = 'P'
         self.up.save()
-        expected = 3
+        expected = 4
         actual = Topic.objects.published().count()
         self.failUnlessEqual(expected, actual, 'Expected %s  topics and returned %s' % (expected, actual))
 
@@ -208,6 +219,12 @@ class TopicTest(TestCase):
         self.failUnlessEqual(actual, expected, 'Child3 slug was %s but expected %s' % (actual, expected))
         
 class PostTest(TestCase):
+
+    fixtures = ['loremauth.json', 'loremblog.json']
+
+    def setUp(self):
+        self.pub = Publication.objects.get(slug='despotic-times')
+
     def test_save(self):
         """Tests the custom save method."""
         
@@ -219,6 +236,7 @@ class PostTest(TestCase):
         
         p = {
              'title': 'Test Title (1)',
+             'publication': self.pub,
              'author': user,
              'content': 'some content',
              'status': 'U'
@@ -267,8 +285,13 @@ class PostTest(TestCase):
         
 class WordPressExportParserTest(TestCase):
     '''Tests the import scripts'''
-    
+
+    fixtures = ['loremauth.json',]
+
     def setUp(self):
+        user = User.objects.get(pk=1)
+        self.pub = Publication(title='Despotic Times', owner=user)
+        self.pub.save()
         file = 'blog/fixtures/wordpress.test.xml'
         self.wp = WordPressExportParser(file)
         
@@ -338,7 +361,7 @@ class ViewTest(TestCase):
     
     '''
     
-    fixtures = ['loremfixtures.json']
+    fixtures = ['loremauth.json', 'loremblog.json']
     
     def setUp(self):
         self.client = Client()
@@ -414,7 +437,7 @@ class ViewTest(TestCase):
     def test_topic_all(self):
         '''Tests the return of the topics page.'''
         url = reverse('blog:topic-list')
-        expected = 302
+        expected = 200
         response = self.client.get(url)
         code = response.status_code
         self.failUnlessEqual(expected, code, 'Expected %s but returned %s for %s' % (expected, code, url))
@@ -422,7 +445,7 @@ class ViewTest(TestCase):
     def test_post_topic(self):
         '''Test the return of posts under a topic.'''
         url = reverse('blog:post-topic', args=['consectetur-adipiscing'])
-        expected = 302
+        expected = 200
         response = self.client.get(url)
         code = response.status_code
         self.failUnlessEqual(expected, code, 'Expected %s but returned %s for %s' % (expected, code, url))

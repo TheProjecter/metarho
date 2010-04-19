@@ -1,3 +1,4 @@
+
 from django.http import Http404
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -13,18 +14,16 @@ CONTENT_MAP = {
 }
 
 FORMAT_MAP = {
-    'json': ('metarho.blog.json', '_json'),
-    'xml': ('metarho.blog.feeds', '_rss'),
-    'rss': ('metarho.blog.feeds', '_rss'),
-    'atom': ('metarho.blog.feeds','_atom'),
-    'rdf': ('metarho.blog.rdf', '_rdf')
+    'html': 'text/html',
+    'json': 'application/json',
+    'xml': 'text/xml',
+    'rss': 'application/rss+xml',
+    'atom': 'application/atom+xml',
+    'rdf': 'application/rdf+xml',
 }
 
-def format_negotiation(view_fn):
+def format_req(fmt, new_fn):
     '''
-    Checks the request for a querstring value called format and returns an
-    alernate response if the format type matches a method name of the
-    'view_fn' + 'format_map_type'.
 
     for example if there the decorated view method was called 'post_list'
     and the format attribue of the querystring was rss::
@@ -36,15 +35,15 @@ def format_negotiation(view_fn):
 
     '''
 
-    def decorator(request, *args, **kwargs):
-        format = request.GET.get('format', None)
-        if format and format in FORMAT_MAP:
-            True # @TODO use new module loader to get the proper modules.
-
-        # Default to returning the original method
-        return view_fn(request, *args, **kwargs)
-
-    return decorator
+    def _decorator(view_fn):
+        def _wraped(request, *args, **kwargs):
+            req_format = request.GET.get('format', None)
+            if req_format == fmt:
+                return new_fn(request, *args, **kwargs)
+            # Default to returning the original method
+            return view_fn(request, *args, **kwargs)
+        return _wraped 
+    return _decorator
 
 def wp_post_redirect(view_fn):
     '''

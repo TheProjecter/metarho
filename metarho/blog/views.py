@@ -8,6 +8,7 @@ from django.contrib.syndication import feeds
 from django.core.urlresolvers import reverse
 
 from metarho.blog.decorators import wp_post_redirect
+from metarho.blog.decorators import format_req
 from metarho import render_with_context
 from metarho.blog.models import Post
 from metarho.blog.models import Tag
@@ -16,16 +17,6 @@ from metarho.blog.feeds import PostsFeedAtom
 from metarho.blog.feeds import feed_render
 
 # All Posts List Methods.
-@wp_post_redirect
-def post_all(request):
-    '''Returns all User Blogs'''
-    posts = Post.objects.published()
-    
-    return render_with_context(request, 'blog/post_list.xhtml', {
-            'title': 'All Posts',                                                
-            'posts': posts,
-            })
-
 def post_all_feed(request):
     '''Returns a Feed for all posts'''
 
@@ -36,6 +27,18 @@ def post_all_feed(request):
     feed.items = Post.objects.published().order_by('-pub_date')
 
     return feed_render(feed)
+
+#@wp_post_redirect
+@format_req('rss', post_all_feed)
+def post_all(request):
+    '''Returns all User Blogs'''
+    posts = Post.objects.published()
+    
+    return render_with_context(request, 'blog/post_list.xhtml', {
+            'title': 'All Posts',                                                
+            'posts': posts,
+            })
+
     
 def post_year(request, year):
     '''Returns all posts for a particular year.'''
