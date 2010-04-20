@@ -1,18 +1,17 @@
 body {
-    color: #003333;
+    color: #d7d7d7;
+    background: #000000 url("images/dk_grey_bg.jpg") repeat-x;
 }
 
-em { color: #af0000;
+h1 em { color: #FFFFFF;
     font-style: italic;
 }
 
 /* Headlines */
-h1, h2, h3 {
-    color: #660000;
+h1, h2, h3, h4 {
+    color: #C26413;
 }
-h4 {
-    color: #a3d5ea;
-}
+
 h1.title {
     margin-bottom: 10px;
     display: block;
@@ -25,7 +24,7 @@ h1.title {
 }
 
 #page {
-    margin: 10px 15px 15px;
+    margin: 0;
 }
 
 /* Content */
@@ -41,17 +40,33 @@ h1.title {
     width: 200px;
     float: left;
 }
+/* header */
+#header {
+    height: 104px;
+    background-image: url("images/grey_vert_pinstripe.jpg");
+    border-bottom: 1px solid #FFFFFF;
+}
+#header-inner {
+    padding: 2em 4em;
+}
 
 /* Navbar */
+#navbar {
+    background-color: #000000;
+    border-bottom:1px solid #E1E1E1;
+    display:block;
+    position:absolute;
+    width:100%;
+}
 #navbar ul
 {
+    border-left: 1px #E1E1E1 solid;
     padding-left: 0;
-    margin-left: 0;
-    background-color: #036;
-    color: White;
+    margin: 0 4em;
     float: left;
     width: 100%;
     font-family: arial, helvetica, sans-serif;
+    background-color: #000000;
 }
 
 #navbar ul li { display: inline; }
@@ -59,7 +74,6 @@ h1.title {
 #navbar ul li a
 {
     padding: 0.2em 1em;
-    background-color: #036;
     color: White;
     text-decoration: none;
     float: left;
@@ -72,9 +86,14 @@ h1.title {
     color: #fff;
 }
 
+/* MAIN AREA */
+#main {
+    margin: 3em 3em;
+}
+
 /* Classes */
 .post-brief {
-    margin-bottom: 15px;
+    margin-bottom: 1.5em;
 }
 .post-title-brief {
     font-size: 130%;
@@ -95,6 +114,10 @@ h1.title {
 
 .post-footer-brief {
     font-size: 105%;
-    margin: 3px 0;
+    margin: .25em 0 .25em 0;
     color: #cc3300;
+}
+
+.block {
+    margin-bottom: 18px;
 }

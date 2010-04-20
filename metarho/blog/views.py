@@ -8,7 +8,7 @@ from django.contrib.syndication import feeds
 from django.core.urlresolvers import reverse
 
 from metarho.blog.decorators import wp_post_redirect
-from metarho.blog.decorators import format_req
+from metarho.decorators import format_req
 from metarho import render_with_context
 from metarho.blog.models import Post
 from metarho.blog.models import Tag

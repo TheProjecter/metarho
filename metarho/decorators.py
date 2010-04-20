@@ -1,10 +1,20 @@
-import mimeparse.py
+# import mimeparse.py
 
 MIME_TYPE = {
     'rss': ['application/rss+xml', 'text/xml'],
     'json': ['application/json', 'text/json'],
-    'atom': ['application/atom+xml'],
+    'atom': ['application/atom+xml', 'text/xml'],
     'rdf': ['application/rdf+xml'],
+    'html': ['text/html'],
+}
+
+FORMAT_MAP = {
+    'html': 'text/html',
+    'json': 'application/json',
+    'xml': 'text/xml',
+    'rss': 'application/rss+xml',
+    'atom': 'application/atom+xml',
+    'rdf': 'application/rdf+xml',
 }
 
 def negotiate_response(mime_types, new_fn):
@@ -22,18 +32,21 @@ def negotiate_response(mime_types, new_fn):
         return view_fn(*args, **kwargs)
     return decorator
 
-def format_based_response(format, new_fn):
+def format_req(fmt, new_fn):
     '''
     Provides compatability with URLs from things like wordpress that
     request content type via a querystring param like '?format=rss'
 
-    :param format: String indicating format to return new_fn for.
+    :param fmt: String indicating format to return new_fn for.
     :param new_fn: Bound method to return if format querystring matches format.
 
     '''
-    def decorator(view_fn):
-        if request.GET.get('format', None) == format:
-            return new_fn(request, *args, **kwargs)
-        return view_fn(*args, **kwargs)
-    
-    return decorator
+
+    def _decorator(view_fn):
+        def _wraped(request, *args, **kwargs):
+            if request.GET.get('format', None) == fmt:
+                return new_fn(request, *args, **kwargs)
+            # Default to returning the original method
+            return view_fn(request, *args, **kwargs)
+        return _wraped
+    return _decorator
