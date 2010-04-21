@@ -1,3 +1,19 @@
+# file views.py
+#
+# Copyright 2010 Scott Turnbull
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import datetime
 import time
 
@@ -28,7 +44,7 @@ def post_all_feed(request):
 
     return feed_render(feed)
 
-#@wp_post_redirect
+@wp_post_redirect
 @format_req('rss', post_all_feed)
 def post_all(request):
     '''Returns all User Blogs'''
@@ -39,7 +55,22 @@ def post_all(request):
             'posts': posts,
             })
 
-    
+def post_year_feed(request, year):
+    '''Returns a Feed for particular year.'''
+
+    feed = PostsFeedAtom('myslug', request)
+    feed.title = 'Flagon With The Dragon'
+    feed.subtitle = "Streamweaver's Pellet of Poison."
+    feed.link = reverse('blog:list-year', args=[year])
+
+    # Get the actual Items
+    tt = time.strptime('-'.join([year]), '%Y')
+    date = datetime.date(*tt[:3])
+    feed.items = Post.objects.published().filter(pub_date__year=date.year).order_by('-pub_date')
+
+    return feed_render(feed)
+
+@format_req('rss', post_year_feed)
 def post_year(request, year):
     '''Returns all posts for a particular year.'''
     tt = time.strptime('-'.join([year]), '%Y')
