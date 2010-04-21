@@ -193,6 +193,7 @@ class Publication(models.Model):
     title = models.CharField(max_length=75)
     slug = models.SlugField(max_length=75, unique=True, blank=True)
     owner = models.ForeignKey(User)
+    default = models.BooleanField(default=True)
     description = models.TextField(null=True, blank=True)
     copyright = models.TextField(null=True, blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
@@ -203,6 +204,10 @@ class Publication(models.Model):
 
     def save(self, force_insert=False, force_update=False):
         '''Custom save method slugifies the title if one is not created.'''
+
+        if self.default: # Make sure there is only one default Publication.
+            Publication.objects.all().update(default=False)
+
         if not self.slug:
              unique_slugify(self, self.title)
         super(Publication, self).save(force_insert, force_update)

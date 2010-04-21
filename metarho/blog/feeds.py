@@ -21,9 +21,11 @@ from django.http import HttpResponse
 from django.contrib.syndication import feeds
 from django.utils import feedgenerator
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import get_object_or_404
 
-
-from metarho.blog.models import Post
+from metarho.blog.models import Topic
+from metarho.blog.models import Publication
 
 def feed_render(feed):
     '''
@@ -57,14 +59,45 @@ class PostsFeed(feeds.Feed):
 
     # These have alternate ways they can be called in a feed.  See `Django
     # Syndication Famework <http://docs.djangoproject.com/en/dev/ref/contrib/syndication/>`
-    title = "Title Not Set"
-    link = "Link Not Set"
-    description = "Description Not Set"
-    author_name = 'Scott Turnbull'
     items = None
-    author_email = 'streamweaver@flagonwiththedragon.com' # Hard-coded author e-mail.
-    author_link = 'http://www.flagonwiththedragon.com' # Hard-coded author URL.
     ttl = 600 # Hard-coded Time To Live.
+
+    def get_object(self, bits):
+        '''
+        Sets the main publication for the feed to pull general feed
+        information from.
+
+        '''
+        return get_object_or_404(Publication, default__exact=True)
+
+    def title(self, obj):
+        '''Returns the title of the publication.'''
+        return obj.title
+
+    def description(self, obj):
+        '''Returns the description of the publication.'''
+        return obj.description
+
+    def link(self):
+        return "test link"
+
+    def author_name(self, obj):
+        '''Returns the publication owners name.'''
+        if obj.owner.get_full_name():
+            obj.owner.get_full_name()
+        return obj.owner.username
+
+    def author_email(self, obj):
+        '''Returns the publication owners email.'''
+        return obj.owner.email
+
+    def author_link(self, obj):
+        '''
+        Returns the publication owners profile page.
+        
+        '''
+        # @TODO Change this to user profile page once it exists.
+        return reverse('blog:index')
 
     def feed_copyright(self):
         '''Generates the Copyright Statement for the Feed.'''
@@ -137,7 +170,8 @@ class PostsFeed(feeds.Feed):
         author's URL as a normal Python string.
 
         """
-        return self.link # @TODO Make this link to userprofile when available.
+        # @TODO Make this link to userprofile when available.
+        return reverse('blog:index')
 
     def item_pubdate(self, item):
         """
@@ -159,4 +193,37 @@ class PostsFeed(feeds.Feed):
 class PostsFeedAtom(PostsFeed):
 
     feed_type = feedgenerator.Atom1Feed
-    subtitle = PostsFeed.description
+
+    def subtitle(self):
+        return self.description(self.get_object(''))
+
+class TopicFeedRss(PostsFeed):
+    '''
+    Returns the latests topic posts in RSS format.
+
+    Each atrribute has alternate ways they can be called in a feed.  See
+    `Django Syndication Famework
+    <http://docs.djangoproject.com/en/dev/ref/contrib/syndication/>`_ for more
+    information.
+
+    '''
+
+    def get_topic(self):
+        '''Returns the topic item specified in slug.'''
+        return get_object_or_404(Topic, path=self.slug)
+
+    def title(self, obj):
+        '''Returns the title of the publication.'''
+        return '%s: %s' % (obj.title, self.get_topic().text)
+
+    def description(self):
+        '''Returns the description of the publication.'''
+        return self._topic.description
+
+class TopicFeedAtom(TopicFeedRss):
+    '''Atom feed formate for Topics.'''
+
+    feed_type = feedgenerator.Atom1Feed
+
+    def subtitle(self):
+        return self.description()
