@@ -7,11 +7,13 @@ Welcome to MetaRho's documentation!
 ===================================
 
 .. include:: ../metarho/README.rst
+.. include:: ../externals/README.rst
 
 Contents:
+=========
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    blog
 

@@ -1,6 +1,5 @@
-##########################
 Dependencies and Externals
-##########################
+==========================
 
 Various external libraries are used with this application.  Information and some
 helpful information about how to use them as well.

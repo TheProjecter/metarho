@@ -1,5 +1,7 @@
 # Makefile for Sphinx documentation
 #
+export PYTHONPATH=.:..:../externals
+export DJANGO_SETTINGS_MODULE=djangosettings
 
 # You can set these variables from the command line.
 SPHINXOPTS    =

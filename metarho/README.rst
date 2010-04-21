@@ -16,10 +16,3 @@ Still here?
 Alright then, it's possible you might find MetaRho useful if you really have a
 desire to publish to the web and have it backed by strong structured data like
 RDF, RDFa and other formats like ATOM and such.
-
-Dependencies
-============
-
-**Django Pagination**
-
-`Django-Pagination Project Page <http://code.google.com/p/django-pagination/>`_

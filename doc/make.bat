@@ -2,13 +2,12 @@
 
 REM Command file for Sphinx documentation
 
-REM adding project to path for introspection support.
-set PYTHONPATH=%PYTHONPATH%;..;../externals
-set DJANGO_SETTINGS_MODULE=djangosettings
-
 set SPHINXBUILD=sphinx-build
 set BUILDDIR=_build
 set ALLSPHINXOPTS=-d %BUILDDIR%/doctrees %SPHINXOPTS% .
+REM adding project to path for introspection support.
+set PYTHONPATH=%PYTHONPATH%;..;../externals
+set DJANGO_SETTINGS_MODULE=djangosettings
 if NOT "%PAPER%" == "" (
 	set ALLSPHINXOPTS=-D latex_paper_size=%PAPER% %ALLSPHINXOPTS%
 )
