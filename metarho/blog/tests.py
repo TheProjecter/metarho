@@ -15,6 +15,7 @@
 # limitations under the License.
 
 from datetime import datetime
+from datetime import date
 from datetime import timedelta
 
 from django.test import TestCase
@@ -384,19 +385,14 @@ class ViewTest(TestCase):
     
     def test_post_detail(self):
         '''Tests individual entry return.'''
-        # Test a published post.
-        attrs = ['2009', 'Apr', '08', 'its-all-greek-to-you']
-        url = reverse('blog:post-detail', args=attrs)
-        expected = 200
-        code = self.client.get(url).status_code
-        self.failUnlessEqual(code, expected, 'Expected %s but returned %s for %s' % (expected, code, url))
-        
-        # Test a published post.
-        attrs = ['2010', 'Mar', '23', 'maecenas-varius']
-        url = reverse('blog:post-detail', args=attrs)
-        expected = 404
-        code = self.client.get(url).status_code
-        self.failUnlessEqual(code, expected, 'Expected %s but returned %s for %s' % (expected, code, url))
+        # Fetch All Posts and make sure they work as expected.
+        expected = {'P': 200, 'U': 404}
+        posts = Post.objects.all()
+        for post in posts:
+            attrs = [post.pub_date.year, date.strftime(post.pub_date, '%b'), post.pub_date.day, post.slug]
+            url = reverse('blog:post-detail', args=attrs)
+            code = self.client.get(url).status_code
+            self.failUnlessEqual(expected[post.status], code, 'Expected %s but returned %s for %s' % (expected[post.status], code, url))
         
     def test_wp_redirect(self):
         '''
@@ -414,7 +410,33 @@ class ViewTest(TestCase):
         code = self.client.get(url).status_code
         expected = 200
         self.failUnlessEqual(code, expected, 'Expected %s but returned %s for %s' % (expected, code, url))
-        
+
+    def test_post_year(self):
+        '''Tests the return of year archives.'''
+        posts = Post.objects.published()
+        for post in posts:
+            expected = 200
+            url = reverse('blog:list-year', args=[post.pub_date.year])
+            code = self.client.get(url).status_code
+            self.failUnlessEqual(expected, code, 'Expected %s but returned %s for %s' % (expected, code, url))
+            # Test Feed
+            url = '%s?format=rss' % url
+            code = self.client.get(url).status_code
+            self.failUnlessEqual(expected, code, 'Expected %s but returned %s for %s' % (expected, code, url))
+
+    def test_post_month(self):
+        '''Tests the return of year archives.'''
+        posts = Post.objects.published()
+        for post in posts:
+            expected = 200
+            url = reverse('blog:list-month', args=[post.pub_date.year, date.strftime(post.pub_date, '%b')])
+            code = self.client.get(url).status_code
+            self.failUnlessEqual(expected, code, 'Expected %s but returned %s for %s' % (expected, code, url))
+            # Test Feed
+            feed_url = '%s?format=rss' % url
+            feed_code = self.client.get(feed_url).status_code
+            self.failUnlessEqual(expected, feed_code, 'Expected %s but returned %s for %s' % (expected, feed_code, feed_url))
+
     def test_post_day(self):
         '''Tests the return for a post day list.'''
         attrs = ['2009', 'Apr', '08']
@@ -460,7 +482,7 @@ class ViewTest(TestCase):
 
     def test_post_topic(self):
         '''Test the return of posts under a topic.'''
-        url = reverse('blog:post-topic', args=['consectetur-adipiscing'])
+        url = reverse('blog:post-topic', args=['consectetur-adipiscing/'])
         expected = 200
         response = self.client.get(url)
         code = response.status_code
