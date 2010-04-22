@@ -425,7 +425,7 @@ class ViewTest(TestCase):
             self.failUnlessEqual(expected, code, 'Expected %s but returned %s for %s' % (expected, code, url))
 
     def test_post_month(self):
-        '''Tests the return of year archives.'''
+        '''Tests the return of month archives.'''
         posts = Post.objects.published()
         for post in posts:
             expected = 200
