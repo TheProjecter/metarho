@@ -22,6 +22,8 @@ from metarho.blog.models import Tag
 from metarho.blog.models import PostMeta
 from metarho.blog.models import Publication
 
+from django.db import models
+from django import forms
 from django.conf import settings
 media = settings.MEDIA_URL
 
@@ -36,13 +38,12 @@ class PostAdmin(admin.ModelAdmin):
     list_display = ('title', 'status')
     list_filter = ('status', 'pub_date', 'author', 'topics')
     inlines = [PostMetaInline,]
+    formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'class':'tinymce'})}, }
     
     class Media:
         js = (
               'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js',
-              ''.join([media, '/js/ckeditor/ckeditor.js']),
-              ''.join([media, '/js/ckeditor/adapters/jquery.js']),
-              ''.join([media, '/js/adminpostwysiwyg.js']),
+              ''.join([media, '/js/tinymce/jscripts/tiny_mce/jquery.tinymce.js']),
               )
     
 class TopicAdmin(admin.ModelAdmin):
