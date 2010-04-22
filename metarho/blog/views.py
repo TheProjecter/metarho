@@ -47,10 +47,14 @@ def post_all_feed(request):
 def post_all(request):
     '''Returns all User Blogs'''
     posts = Post.objects.published()
+    alt_links = [
+    {'type': 'application/atom+xml', 'title': 'Atom Feed', 'href': '%s?format=rss' % reverse('blog:index')}
+    ]
     
     return render_with_context(request, 'blog/post_list.xhtml', {
             'title': 'All Posts',                                                
             'posts': posts,
+            'alt_links': alt_links,
             })
 
 def post_year_feed(request, year):
@@ -151,7 +155,6 @@ def post_topic_feed(request, path):
     feed = TopicFeedAtom(path, request)
 
     topic = get_object_or_404(Topic, path=path)
-    feed._topic = topic
     feed.items = Post.objects.published().filter(topics=topic)
 
     return feed_render(feed)
@@ -197,6 +200,20 @@ def topic_list(request):
             })
 
 # Topics and Tags list views
+def post_topic_year_feed(request, slug, year):
+    '''Produces a feed for the topic view.'''
+
+    feed = TopicFeedAtom(slug, request)
+
+    topic = get_object_or_404(Topic, path=slug)
+
+    tt = time.strptime('-'.join([year]), '%Y')
+    date = datetime.date(*tt[:3])
+    feed.items = Post.objects.published().filter(pub_date__year=date.year, topics=topic)
+
+    return feed_render(feed)
+
+@format_req('rss', post_topic_feed)
 def post_topic_year(request, slug, year):
     '''Returns all posts under a topic for a particular year.'''
     topic = get_object_or_404(Topic, slug=slug)
@@ -208,6 +225,9 @@ def post_topic_year(request, slug, year):
             'posts': posts,
             'title': 'Posts under %s for %s' % (topic.text , date.strftime("%Y")),
             })
+
+def post_topic_month_feed(request, slug, year, month):
+    '''Returns feed for posts in a particular month.'''
 
 def post_topic_month(request, slug, year, month):
     '''Returns all posts for a particular month.'''

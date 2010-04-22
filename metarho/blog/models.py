@@ -150,7 +150,7 @@ class Topic(models.Model):
            ontology.append(target.slug)
            target = target.parent
         ontology.append(self.slug)
-        return '/'.join(ontology)
+        return '%s/' % '/'.join(ontology) # Needs a trailing slash too.
 
 
     def save(self, force_insert=False, force_update=False):

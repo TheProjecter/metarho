@@ -218,7 +218,7 @@ class TopicFeedRss(PostsFeed):
 
     def description(self):
         '''Returns the description of the publication.'''
-        return self._topic.description
+        return self.get_topic().description
 
 class TopicFeedAtom(TopicFeedRss):
     '''Atom feed formate for Topics.'''
