@@ -109,6 +109,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'pagination',
     'metarho.account',
+    'metarho.sitemeta',
     'metarho.blog',
 )
 

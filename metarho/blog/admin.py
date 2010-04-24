@@ -20,7 +20,6 @@ from metarho.blog.models import Post
 from metarho.blog.models import Topic
 from metarho.blog.models import Tag
 from metarho.blog.models import PostMeta
-from metarho.blog.models import Publication
 
 from django.db import models
 from django import forms
@@ -52,7 +51,6 @@ class TopicAdmin(admin.ModelAdmin):
 class TagAdmin(admin.ModelAdmin):
     search_fields = ['text']
 
-admin.site.register(Publication)
 admin.site.register(Post, PostAdmin)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Topic, TopicAdmin)

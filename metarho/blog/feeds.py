@@ -25,7 +25,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 
 from metarho.blog.models import Topic
-from metarho.blog.models import Publication
+from metarho.sitemeta.models import SiteInformation
 
 def feed_render(feed):
     '''
@@ -68,7 +68,7 @@ class PostsFeed(feeds.Feed):
         information from.
 
         '''
-        return get_object_or_404(Publication, default__exact=True)
+        return get_object_or_404(SiteInformation, default__exact=True)
 
     def title(self, obj):
         '''Returns the title of the publication.'''

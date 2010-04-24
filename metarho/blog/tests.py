@@ -1,4 +1,4 @@
-# file tests.py
+# file blog/tests.py
 #
 # Copyright 2010 Scott Turnbull
 #
@@ -21,13 +21,13 @@ from datetime import timedelta
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.test.client import Client
 
 from metarho.blog.models import Post
 from metarho.blog.models import Tag
 from metarho.blog.models import Topic
-from metarho.blog.models import Publication
 from metarho.blog.importer import WordPressExportParser
 
 # CUSTOM MANAGER TESTS
@@ -39,7 +39,6 @@ class PostManagerTest(TestCase):
     
     def setUp(self):
         # Define a default users.
-        self.pub = Publication.objects.get(pk=1)
         self.author = User(username='Fakeuser', email='fakeuser@email.com')
         self.author.save()
     
@@ -54,7 +53,7 @@ class PostManagerTest(TestCase):
         self.failUnlessEqual(expected, actual, 'Expected %s posts and returned %s!' % (expected, actual))
 
         # Create a new post with a future publish date
-        p = Post(title='test', content='test', status='P', publication=self.pub)
+        p = Post(title='test', content='test', status='P')
         p.author = self.author
         p.save()
         actual = Post.objects.published().count()
@@ -77,7 +76,6 @@ class TagManagerTest(TestCase):
     
     def setUp(self):
         '''Setup some related objects to test.'''
-        self.pub = Publication.objects.get(slug='despotic-times')
         self.author = User(username='Fakeuser', email='fakeuser@email.com')
         self.author.save()
 
@@ -88,14 +86,14 @@ class TagManagerTest(TestCase):
         tag2.save()
 
         # postdated post to test
-        self.pd = Post(title='post dated', content='test', status='P', author=self.author, publication=self.pub)
+        self.pd = Post(title='post dated', content='test', status='P', author=self.author)
         self.pd.pub_date = datetime.now() + timedelta(days=1)
         self.pd.author = self.author
         self.pd.save()
         self.pd.tags.add(tag1)
         self.pd.save()
         # unpublished post to test.
-        self.up = Post(title='unpublished', content='test', status='U', author=self.author, publication=self.pub)
+        self.up = Post(title='unpublished', content='test', status='U', author=self.author)
         self.up.author = self.author
         self.up.save()
         self.up.tags.add(tag2)
@@ -138,7 +136,6 @@ class TopicManagerTest(TestCase):
     def setUp(self):
         '''Setup some related objects to test.'''
         # Add some more topics to test.
-        self.pub = Publication.objects.get(slug='despotic-times')
         self.t1 = Topic(text='Test1')
         self.t1.save()
         self.t2 = Topic(text='Test2')
@@ -147,14 +144,14 @@ class TopicManagerTest(TestCase):
         self.author = User(username='Fakeuser', email='fakeuser@email.com')
         self.author.save()
         # postdated post to test
-        self.pd = Post(title='post dated', content='test', status='P', author=self.author, publication=self.pub)
+        self.pd = Post(title='post dated', content='test', status='P', author=self.author)
         self.pd.pub_date = datetime.now() + timedelta(days=1)
         self.pd.author = self.author
         self.pd.save()
         self.pd.topics.add(self.t1)
         self.pd.save()
         # un post to test.
-        self.up = Post(title='un', content='test', status='U', author=self.author, publication=self.pub)
+        self.up = Post(title='un', content='test', status='U', author=self.author)
         self.up.author = self.author
         self.up.save()
         self.up.topics.add(self.t2)
@@ -239,9 +236,6 @@ class PostTest(TestCase):
 
     fixtures = ['loremauth.json', 'loremblog.json']
 
-    def setUp(self):
-        self.pub = Publication.objects.get(slug='despotic-times')
-
     def test_save(self):
         """Tests the custom save method."""
         
@@ -253,7 +247,6 @@ class PostTest(TestCase):
         
         p = {
              'title': 'Test Title (1)',
-             'publication': self.pub,
              'author': user,
              'content': 'some content',
              'status': 'U'
@@ -301,17 +294,15 @@ class PostTest(TestCase):
         self.failUnlessEqual(post2.slug, expected, 'Post2 slug was %s but expected %s' % (post2.slug, expected))
         
 class WordPressExportParserTest(TestCase):
-    '''Tests the import scripts'''
+    '''Tests the import scripts as it relates to interation with blog app.'''
 
     fixtures = ['loremauth.json',]
 
     def setUp(self):
-        user = User.objects.get(pk=1)
-        self.pub = Publication(title='Despotic Times', owner=user)
-        self.pub.save()
+        self.owner = User.objects.get(pk=1)
         file = 'blog/fixtures/wordpress.test.xml'
-        self.wp = WordPressExportParser(file)
-        
+        self.wp = WordPressExportParser(file, self.owner.username)
+
     def test_import_tags(self):
         '''Tests the Tag Import'''
         self.wp.import_tags()

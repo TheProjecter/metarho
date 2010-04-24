@@ -16,16 +16,18 @@
 
 import sys
 from datetime import datetime
-
+from urlparse import urlparse
 from xml.etree import ElementTree
 
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
+from django.core.exceptions  import ObjectDoesNotExist
 
 from metarho.blog.models import Post
 from metarho.blog.models import Topic
 from metarho.blog.models import Tag
 from metarho.blog.models import PostMeta
-from metarho.blog.models import Publication
+from metarho.sitemeta.models import SiteInformation
 
    
 class WordPressExportParser:
@@ -40,7 +42,7 @@ class WordPressExportParser:
     _author = None
     _pub = None
     
-    def __init__(self, file):
+    def __init__(self, file, username):
         try:
             self.tree = ElementTree.parse(file)
             self.chan = self.tree.find('channel')
@@ -48,35 +50,50 @@ class WordPressExportParser:
             self.content_ns = '{http://purl.org/rss/1.0/modules/content/}'
             self.dc_ns = '{http://purl.org/dc/elements/1.1/}'
             self.excerpt_ns = '{http://wordpress.org/export/1.0/excerpt/}'
+            try: # Need an owner to assosite the site information and posts to.
+                self.owner = User.objects.get(username=username)
+            except User.DoesNotExist:
+                raise ObjectDoesNotExist('No usre exists matching %s' % username)
         except IOError:
             sys.stderr.write("File Not Found!: %s" % file)
-        self._pub = self.get_publication()
 
-    def set_publication(self, pub):
-        '''Sets the Default publication for all posts imported.'''
-        self._pub = pub
-
-    def get_publication(self):
-        '''Returns the publication or the default publication if None.'''
-        if not self._pub:
-            return Publication.objects.all().order_by('-date_created')[0]
-        return self._pub
+    def parse(self):
+        '''Initiates all import operations on a file.'''
+        self.import_site_information()
+        self.import_tags()
+        self.import_catagories()
+        self.import_posts()
             
     def set_author(self, user):
         '''Sets the default author for all posts imported.'''
         self._author = user
         
     def get_author(self):
-        '''Returns the author user or publication owner if none.'''
+        '''Returns the author user or site owner if none.'''
         if not self._author:
-            return self._pub.owner
+            return self.owner
         return self._author
     
-    def parse(self):
-        '''Initiates all import operations on a file.'''
-        self.import_tags()
-        self.import_catagories()
-        self.import_posts()
+    def import_site_information(self):
+        '''
+        Imports Site Information from the file into a new SiteInformation
+        object so it can be set as the default later if appropriate.
+        
+        '''
+        # Create the Site object
+        url = urlparse(self.chan.find(self.wp_ns + 'base_blog_url').text)
+        name = self.chan.find('title').text
+        site = Site(domain=url.netloc, name=name)
+        site.save()
+
+        # Create SiteInformation object.
+        info = SiteInformation()
+        info.title = name
+        info.default = False # Don't override any site settings.
+        info.description = self.chan.find('description').text
+        info.site = site
+        info.owner = self.owner
+        info.save()
     
     def import_tags(self):
         '''Import Tags.'''
@@ -110,8 +127,6 @@ class WordPressExportParser:
         content_ns = self.content_ns
         if item.find(wp_ns + 'post_type').text == 'post':
             post = Post()
-            # Important to get publication first as it sets default author.
-            post.publication = self.get_publication()
             post.author = self.get_author()
             post.title = item.find('title').text
             if not post.title:

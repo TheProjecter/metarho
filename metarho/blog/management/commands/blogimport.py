@@ -14,17 +14,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from optparse import make_option
+
 from django.core.management.base import BaseCommand
+from django.contrib.auth.models import User
 
 from metarho.blog.importer import WordPressExportParser
 
 class Command(BaseCommand):
-
+    option_list = BaseCommand.option_list + (
+            make_option("-u", "--username", dest="username", default=None),
+        )
 
     def handle(self, *args, **options):
+        # Throws an error if not a valid user.
+        user = self._get_user(options["username"]) 
         for file in args:
-            wp = WordPressExportParser(file)
+            wp = WordPressExportParser(file, user.username)
             wp.parse()
         
+    def _get_user(self, username):
+        """
+        Returns user by `username` or throw an error saying they don't exist.
 
+        :param username: Username of user to find or create.
+        
+        """
+        try:
+            return User.objects.get(username=username)
+        except User.DoesNotExist:
+            raise ObjectDoesNotExist('User %s does not exist!' % username)
     
