@@ -1,4 +1,4 @@
-# file admin.py
+# file blog/admin.py
 # 
 # Copyright 2010 Scott Turnbull
 #
@@ -14,16 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Admin classes for tracback models
-from django.contrib import admin
+# Admin classes for blog models
 from metarho.blog.models import Post
 from metarho.blog.models import Topic
 from metarho.blog.models import Tag
 from metarho.blog.models import PostMeta
 
+from django.contrib import admin
 from django.db import models
 from django import forms
 from django.conf import settings
+
 media = settings.MEDIA_URL
 
 class PostMetaInline(admin.TabularInline):

@@ -110,3 +110,8 @@ class Topic(models.Model):
     class Meta:
         ordering = ['path']
         unique_together = (('slug', 'parent'), ('text', 'parent'))
+
+class TestItem(models.Model):
+    """This is a test of the generic forigen key."""
+    title = models.CharField(max_length=75)
+    tags = generic.GenericRelation(Tag)

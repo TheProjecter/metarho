@@ -111,6 +111,7 @@ INSTALLED_APPS = (
     'metarho.account',
     'metarho.sitemeta',
     'metarho.blog',
+    'metarho.ontology',
 )
 
 EXTENSION_DIRS = (
