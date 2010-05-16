@@ -17,7 +17,6 @@
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
-
 class Tag(models.Model):
     '''
     Tags for blog entries that can cross relate information between users
@@ -27,9 +26,10 @@ class Tag(models.Model):
 
     text = models.CharField(max_length=30, unique=True)
     slug = models.SlugField(max_length=30, unique=True, null=True, blank=True)
-    content_type = models.ForeignKey(ContentType)
-    object_id = models.PositiveIntegerField()
-    content_object = generic.GenericForeignKey('content_type', 'object_id')
+
+    # Because I can't stop myself from adding these fields for some reason.
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now_add=True, auto_now=True)
 
     def save(self, force_insert=False, force_update=False):
         '''
@@ -48,6 +48,20 @@ class Tag(models.Model):
     class Meta:
         ordering = ['text']
 
+class TagCatalog(models.Model):
+    """
+    Joining model between Tagged items and Tags.  I'm finding this more
+    appealing both for performance issues and because tag slugs will be easier
+    to maintain if Tags themselves are actually unique.
+    
+    """
+    # What Tag is this referring to.
+    tag = models.ForeignKey(Tag)
+    # Content Type Stuff for generic relationships.
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    content_object = generic.GenericForeignKey('content_type', 'object_id')
+
 class Topic(models.Model):
     '''
     Topics form sections and catagories of posts to enable topical based
@@ -61,10 +75,9 @@ class Topic(models.Model):
     slug = models.CharField(max_length=75, null=True, blank=True)
     path = models.CharField(max_length=255, blank=True)
 
-    # Generic Content Type Items
-    content_type = models.ForeignKey(ContentType)
-    object_id = models.PositiveIntegerField()
-    content_object = generic.GenericForeignKey('content_type', 'object_id')
+    # Because I can't stop myself from adding these fields for some reason.
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now_add=True, auto_now=True)
 
     def get_path(self):
         '''
@@ -111,7 +124,12 @@ class Topic(models.Model):
         ordering = ['path']
         unique_together = (('slug', 'parent'), ('text', 'parent'))
 
-class TestItem(models.Model):
-    """This is a test of the generic forigen key."""
-    title = models.CharField(max_length=75)
-    tags = generic.GenericRelation(Tag)
+class TopicCatalog(models.Model):
+    """Joining model between Cataloged Models and Topics."""
+
+    # Actual Topic this applies to.
+    topic = models.ForeignKey(Topic)
+    # Generic Content Type Items
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    content_object = generic.GenericForeignKey('content_type', 'object_id')

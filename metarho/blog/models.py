@@ -20,8 +20,11 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
+from django.contrib.contenttypes import generic
 
 from metarho import unique_slugify
+from metarho.ontology.models import TopicCatalog
+from metarho.ontology.models import TagCatalog
 
 PUBLISHED_STATUS = 'P'
 UNPUBLISHED_STATUS = 'U'
@@ -51,144 +54,10 @@ class PostManager(models.Manager):
             pub_date = datetime.now()
         return self.filter(status=PUBLISHED_STATUS, pub_date__lte=pub_date, pub_date__isnull=False)
     
-class TagManager(models.Manager):
-    '''
-    Adds some features for managing tags related to only published posts.
-    
-    '''
-    def published(self, pub_date=None):
-        '''
-        Only returns tags for published post of pub_date or earlier.
-
-        :param pub_date: Posts with pub_date later than this are not considered
-                         published.
-
-        '''
-        if not pub_date:
-            pub_date = datetime.now()
-        return self.filter(post__status=PUBLISHED_STATUS, post__pub_date__lte=pub_date, post__pub_date__isnull=False).distinct()
-        
-class TopicManager(models.Manager):
-    '''
-    Adds some features for managing tags related to only published posts.
-    
-    '''
-    def published(self, pub_date=None):
-        '''
-        Only returns topics for published posts of pub_date or earlier.
-
-        :param pub_date: Posts with pub_date later than this are not considered
-                         published.
-
-        '''
-        
-        if not pub_date:
-            pub_date = datetime.now()
-        return self.filter(post__status=PUBLISHED_STATUS, post__pub_date__lte=pub_date, post__pub_date__isnull=False).distinct()
-
-# MODELS
-
-class Tag(models.Model):
-    '''
-    Tags for blog entries that can cross relate information between users
-    and categories.
-    
-    '''
-    
-    text = models.CharField(max_length=30, unique=True)
-    slug = models.SlugField(max_length=30, unique=True, null=True, blank=True)
-    objects = TagManager()
-
-    def weight(self):
-        '''Returns the percent of posts this tag applies to.'''
-        post_total = Post.objects.published().count()
-        tag_total = Post.objects.published().filter(tags=self.text).count()
-
-        return tag_total/post_total
-
-    def save(self, force_insert=False, force_update=False):
-        '''
-        Custom save method to handle slugs and such.
-        '''
-        
-        # Create slug if none exists.
-        if not self.slug:
-            unique_slugify(self, self.text) # Create unique slug if none exists.
-     
-        super(Tag, self).save(force_insert, force_update) # Actual Save method.
-     
-    def __unicode__(self):
-        return self.text
-    
-    class Meta:
-        ordering = ['text']
-        
-class Topic(models.Model):
-    '''
-    Topics form sections and catagories of posts to enable topical based
-    conversations.
-    
-    '''
-    text = models.CharField(max_length=75)
-    parent = models.ForeignKey('self', null=True, blank=True) # Enable topic structures.
-    description = models.TextField(null=True, blank=True)
-    # Can be null and blank because it will get auto generated on save if so.
-    slug = models.CharField(max_length=75, null=True, blank=True)
-    path = models.CharField(max_length=255, blank=True)
-
-    # Custom manager for returning published posts.
-    objects = TopicManager()
-
-    def get_path(self):
-        '''
-        Constructs the path value for this topic based on hierarchy.
-        
-        '''
-        ontology = []
-        target = self.parent
-        while(target is not None):
-           ontology.append(target.slug)
-           target = target.parent
-        ontology.append(self.slug)
-        return '%s/' % '/'.join(ontology) # Needs a trailing slash too.
-
-
-    def save(self, force_insert=False, force_update=False):
-        '''
-        Custom save method to handle slugs and such.
-        '''
-        # Set pub_date if none exist and publish is true.
-        if not self.slug:
-            qs = Topic.objects.filter(parent=self.parent)
-            unique_slugify(self, self.text, queryset=qs) # Unique for each parent.
-
-        # Raise validation error if trying to create slug duplicate under parent.
-        if Topic.objects.exclude(pk=self.pk).filter(parent=self.parent, slug=self.slug):
-            raise ValidationError("Slugs cannot be duplicated under the same parent topic.")
-
-        self.path = self.get_path() # Rebuild the path attribute whenever saved.
-     
-        super(Topic, self).save(force_insert, force_update) # Actual Save method.
-
-    def __unicode__(self):
-        '''Returns the name of the Topic as a it's chained relationship.'''
-        ontology = []
-        target = self.parent
-        while(target is not None):
-           ontology.append(target.text)
-           target = target.parent
-        ontology.append(self.text)
-        return ' - '.join(ontology)
-
-    class Meta:
-        ordering = ['path']
-        unique_together = (('slug', 'parent'), ('text', 'parent'))
-
 class Post(models.Model):
     '''Blog Entries'''
 
     title = models.CharField(max_length=75)
-    # @TODO Make slug unique for publication on date.
     slug = models.SlugField(max_length=75, null=True, blank=True, unique_for_date='pub_date')
     author = models.ForeignKey(User)
     content = models.TextField(null=True)
@@ -196,10 +65,12 @@ class Post(models.Model):
     pd_help = 'Date to publish.'
     pub_date = models.DateTimeField(help_text=pd_help, null=True, blank=True)
     status = models.CharField(max_length=1, choices=POST_STATUS)
-    tags = models.ManyToManyField(Tag, null=True)
-    topics = models.ManyToManyField(Topic, null=True)
-    created_on = models.DateTimeField(null=False, blank=False, auto_now_add=True)
-    last_updated = models.DateTimeField(null=False, blank=False, auto_now=True, auto_now_add=True)
+    date_created = models.DateTimeField(null=False, blank=False, auto_now_add=True)
+    date_modified = models.DateTimeField(null=False, blank=False, auto_now=True, auto_now_add=True)
+
+    # Reverse Generic Relationships
+    topics = generic.GenericRelation(TopicCatalog)
+    tags = generic.GenericRelation(TagCatalog)
     
     objects = PostManager()
 

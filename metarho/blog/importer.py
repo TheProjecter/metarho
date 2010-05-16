@@ -24,9 +24,11 @@ from django.contrib.sites.models import Site
 from django.core.exceptions  import ObjectDoesNotExist
 
 from metarho.blog.models import Post
-from metarho.blog.models import Topic
-from metarho.blog.models import Tag
 from metarho.blog.models import PostMeta
+from metarho.ontology.models import Topic
+from metarho.ontology.models import TopicCatalog
+from metarho.ontology.models import Tag
+from metarho.ontology.models import TagCatalog
 from metarho.sitemeta.models import SiteInformation
 
    
@@ -146,12 +148,12 @@ class WordPressExportParser:
             try: 
                 post.save()
                 
-                # modify created_on date after save because autonow is on.
-                post.created_on = postdate
+                # modify date_created after save because autonow is on.
+                post.date_created = postdate
                 post.save()
                 # Enrich the rest of the post.
                 self._post_meta(post, item)
-                self._post_cats(post, item)
+                self._catalog_post(post, item)
     
             except:
                 sys.stderr.write("Error importing %s" % post.title)
@@ -184,15 +186,17 @@ class WordPressExportParser:
                 sys.stderr.write("Unable to save %s %s for post %s. Skipping." % (pm.key, pm.value, post.title))
                 pass
         
-    def _post_cats(self, post, item):
+    def _catalog_post(self, post, item):
         '''Build tags and topics for post.'''
         post_cats = item.findall('category')
         for pc in post_cats:
             #check for attributes
             if pc.get('nicename'):
                 if pc.attrib['domain'] == 'category':
-                    c = Topic.objects.get(slug=pc.attrib['nicename'])
-                    post.topics.add(c)
+                    t = Topic.objects.get(slug=pc.attrib['nicename'])
+                    tc = TopicCatalog(content_object=post, topic=t)
+                    tc.save()
                 elif pc.attrib['domain'] == 'tag':
                     t = Tag.objects.get(slug=pc.attrib['nicename'])
-                    post.tags.add(t)
+                    tc = TagCatalog(content_object=post, tag=t)
+                    tc.save()
