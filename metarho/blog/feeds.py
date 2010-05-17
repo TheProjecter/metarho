@@ -21,10 +21,9 @@ from django.http import HttpResponse
 from django.contrib.syndication import feeds
 from django.utils import feedgenerator
 from django.core.urlresolvers import reverse
-from django.core.exceptions import ObjectDoesNotExist
+# from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 
-from metarho.blog.models import Topic
 from metarho.sitemeta.models import SiteInformation
 
 def feed_render(feed):
@@ -196,34 +195,3 @@ class PostsFeedAtom(PostsFeed):
 
     def subtitle(self):
         return self.description(self.get_object(''))
-
-class TopicFeedRss(PostsFeed):
-    '''
-    Returns the latests topic posts in RSS format.
-
-    Each atrribute has alternate ways they can be called in a feed.  See
-    `Django Syndication Famework
-    <http://docs.djangoproject.com/en/dev/ref/contrib/syndication/>`_ for more
-    information.
-
-    '''
-
-    def get_topic(self):
-        '''Returns the topic item specified in slug.'''
-        return get_object_or_404(Topic, path=self.slug)
-
-    def title(self, obj):
-        '''Returns the title of the publication.'''
-        return '%s: %s' % (obj.title, self.get_topic().text)
-
-    def description(self):
-        '''Returns the description of the publication.'''
-        return self.get_topic().description
-
-class TopicFeedAtom(TopicFeedRss):
-    '''Atom feed formate for Topics.'''
-
-    feed_type = feedgenerator.Atom1Feed
-
-    def subtitle(self):
-        return self.description()

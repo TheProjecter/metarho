@@ -1,11 +1,7 @@
 {% extends "site_base.xhtml" %}
 
-{% load blog_tags %}
-
 {% block sidebar-left-blocks %}
 {{ block.super }}
-    {% topic_block %}
-    {% tag_cloud_block %}
     {% archive_list %}
 {% endblock %}
 
@@ -13,5 +9,4 @@
         <li><a href="{% url site-index %}">Home</a></li>
         <li><a href="{% url blog:topic-list %}">Topics</a></li>
         <li><a href="{% url blog:tag-list %}">Tags</a></li>
-        {% topic_navlinks %}
 {% endblock %}
