@@ -1,4 +1,4 @@
-# file ontology/admin.py
+# file blog/admin.py
 #
 # Copyright 2010 Scott Turnbull
 #
@@ -16,15 +16,9 @@
 
 from django.contrib import admin
 
-from metarho.ontology.models import Tag
-from metarho.ontology.models import Topic
+from metarho.sitemeta.models import SiteInformation
 
-class TagAdmin(admin.ModelAdmin):
-    search_fields = ['text']
+class SiteInformationAdmin(admin.ModelAdmin):
+    model = SiteInformation
 
-class TopicAdmin(admin.ModelAdmin):
-    search_fields = ['text']
-
-
-admin.site.register(Tag, TagAdmin)
-admin.site.register(Topic, TopicAdmin)
+admin.site.register(SiteInformation, SiteInformationAdmin)

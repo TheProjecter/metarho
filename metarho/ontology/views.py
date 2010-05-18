@@ -18,6 +18,19 @@ from metarho import render_with_context
 from metarho.ontology.models import Topic
 from metarho.ontology.models import Tag
 
+def catalog(request):
+    """Returns both a tag cloud and topic list."""
+
+    tags = Tag.objects.all()
+    topics = Topic.objects.all()
+
+    return render_with_context(request, 'ontology/catalog.xhtml', {
+            'title': 'Catalog',
+            'description': "The following is a list of classifications for content.",
+            'tags': tags,
+            'topics': topics,
+            })
+
 def tags(request):
     """Returns a list of all tags for display and linking."""
 

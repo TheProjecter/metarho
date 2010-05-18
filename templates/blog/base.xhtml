@@ -1,4 +1,5 @@
 {% extends "site_base.xhtml" %}
+{% load blog_tags %}
 
 {% block sidebar-left-blocks %}
 {{ block.super }}
@@ -7,6 +8,6 @@
 
 {% block navlinks %}
         <li><a href="{% url site-index %}">Home</a></li>
-        <li><a href="{% url blog:topic-list %}">Topics</a></li>
-        <li><a href="{% url blog:tag-list %}">Tags</a></li>
+        <li><a href="{% url catalog:topics %}">Topics</a></li>
+        <li><a href="{% url catalog:tags %}">Tags</a></li>
 {% endblock %}

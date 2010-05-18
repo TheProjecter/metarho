@@ -16,8 +16,6 @@
 
 # Admin classes for blog models
 from metarho.blog.models import Post
-from metarho.blog.models import Topic
-from metarho.blog.models import Tag
 from metarho.blog.models import PostMeta
 
 from django.contrib import admin
@@ -46,12 +44,4 @@ class PostAdmin(admin.ModelAdmin):
               ''.join([media, '/js/tinymce/jscripts/tiny_mce/jquery.tinymce.js']),
               )
     
-class TopicAdmin(admin.ModelAdmin):
-    search_fields = ['text']
-    
-class TagAdmin(admin.ModelAdmin):
-    search_fields = ['text']
-
 admin.site.register(Post, PostAdmin)
-admin.site.register(Tag, TagAdmin)
-admin.site.register(Topic, TopicAdmin)

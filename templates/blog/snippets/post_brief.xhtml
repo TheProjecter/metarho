@@ -13,16 +13,16 @@
         <div id="post-footer-{{ post.id }" class="post-footer-brief">
             {% if post.tags.all %}
             Tags:
-            {% for tag in post.tags.all %}
-            <a href="{% url blog:post-tag tag.slug %}">{{ tag.text }}</a>{% ifnotequal forloop.revcounter0 0 %},{% endifnotequal %}
+            {% for item in post.tags.all %}
+            <a href="">{{ item.tag.text }}</a>{% ifnotequal forloop.revcounter0 0 %},{% endifnotequal %}
             {% endfor %}
             &laquo;&raquo;
             {% endif %}
             {% if post.topics.all %}
             Topics:
-            {% for topic in post.topics.all %}
-                <a href="{% url blog:post-topic topic.path %}" title="{{ topic.description|striptags }}">
-                {{ topic }}</a>{% ifnotequal forloop.revcounter0 0 %}, {% endifnotequal %}
+            {% for item in post.topics.all %}
+                <a href="" title="{{ item.topic.description|striptags }}">
+                {{ item.topic }}</a>{% ifnotequal forloop.revcounter0 0 %}, {% endifnotequal %}
             {% endfor %}
             {% endif %}
         </div> <!-- /post-footer-brief -->
