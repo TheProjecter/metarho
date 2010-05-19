@@ -18,6 +18,6 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('metarho.ontology.views',
     url(r'^/?$', 'topics', name='index'),
-    url(r'^(?P<path>.*)$', 'topics', name='index'),
+    url(r'^(?P<path>.*)$', 'topics', name='detail'),
 )
 # (?P<path>.*)

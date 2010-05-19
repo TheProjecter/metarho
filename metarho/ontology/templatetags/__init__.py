@@ -1,4 +1,4 @@
-# file ontology/tag_urls.py
+# file ontology/templatetags/__init__.py
 #
 # Copyright 2010 Scott Turnbull
 #
@@ -13,11 +13,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-from django.conf.urls.defaults import *
-
-urlpatterns = patterns('metarho.ontology.views',
-    url(r'^/?$', 'tags', name='index'),
-    url(r'^(?P<slug>[\w\-]+)/$', 'tag', name='detail'),
-)
-# (?P<slug>[\w\-]+)/$

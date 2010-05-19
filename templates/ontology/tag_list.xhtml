@@ -5,7 +5,7 @@
 {% block content-body %}
 	{% if tags %}
 	    {% for tag in tags %}
-            <a href="{% url blog:post-tag tag.slug %}">{{ tag.text }}</a>{% ifnotequal forloop.revcounter0 0 %},{% endifnotequal %}
+            <a href="{% url tag:detail tag.slug %}">{{ tag.text }}</a>{% ifnotequal forloop.revcounter0 0 %},{% endifnotequal %}
 	    {% endfor %}
 	{% else %}
 	    <div class="summary warning">No tags were found.</div>

@@ -1,4 +1,4 @@
-# file ontology/tag_urls.py
+# file ontology/templatetags/ontology_tags.py
 #
 # Copyright 2010 Scott Turnbull
 #
@@ -14,10 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from django.conf.urls.defaults import *
+from django import template
 
-urlpatterns = patterns('metarho.ontology.views',
-    url(r'^/?$', 'tags', name='index'),
-    url(r'^(?P<slug>[\w\-]+)/$', 'tag', name='detail'),
-)
-# (?P<slug>[\w\-]+)/$
+from metarho.ontology.models import Tag
+from metarho.ontology.models import TagCatalog
+
+register = template.Library()
+
+@register.inclusion_tag('ontology/snippets/tag_cloud.xhtml')
+def tag_cloud():
+    '''Produces a tag cloud of tags used in the database.'''
+    tags = Tag.objects.order_by('text').filter(tagcatalog__isnull=False)
+    total = TagCatalog.objects.all().count()
+    return {'tags': tags, 'total': total}

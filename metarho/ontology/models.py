@@ -22,6 +22,9 @@ class Tag(models.Model):
     Tags for blog entries that can cross relate information between users
     and categories.
 
+    `Tags <http://en.wikipedia.org/wiki/Tag_%28metadata%29>`_ are intended to be
+    single deapth way of quick way of catagorizing and relating content.
+
     '''
 
     text = models.CharField(max_length=30, unique=True)
@@ -31,10 +34,17 @@ class Tag(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now_add=True, auto_now=True)
 
+    def weight(self):
+        """Returns the ratio this tag to total tags on items."""
+        all_tags = TagCatalog.objects.all().count()
+        this_tag = self.tagcatalog_set.count()
+
+        if all_tags == 0 or this_tag == 0: # make the return sensible
+            return 0
+        return this_tag/all_tags
+
     def save(self, force_insert=False, force_update=False):
-        '''
-        Custom save method to handle slugs and such.
-        '''
+        '''Extends the normal model save method to provide for slugs.'''
 
         # Create slug if none exists.
         if not self.slug:
@@ -64,8 +74,16 @@ class TagCatalog(models.Model):
 
 class Topic(models.Model):
     '''
-    Topics form sections and catagories of posts to enable topical based
-    conversations.
+    Topics provide `Catagorization <http://en.wikipedia.org/wiki/Categorization>`_
+    of information in a hierarchal way.
+
+    Topic slugs and names should be unque at it's level under Parent and the
+    full name of a topic is considered the chained structure if itself and all
+    it's parents.
+
+    For instance a topic of "Django" under a parent topic of "Python" would be
+    listed as "Python/Django" for it's display name and the path attribute would
+    read as "python/django"
 
     '''
     text = models.CharField(max_length=75)
