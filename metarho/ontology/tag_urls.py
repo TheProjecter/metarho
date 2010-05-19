@@ -1,4 +1,4 @@
-# file ontology/urls.py
+# file ontology/tag_urls.py
 #
 # Copyright 2010 Scott Turnbull
 #
@@ -17,7 +17,7 @@
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('metarho.ontology.views',
-    url(r'^/?$', 'catalog', name='index'),
-    url(r'^tags/?$', 'tags', name='tags'),
-    url(r'^topics/?$', 'topics', name='topics'),
+    url(r'^/?$', 'tags', name='index'),
+    url(r'^(?P<slug>[\w\-]+)/$', 'tag', name='tag'),
 )
+# (?P<slug>[\w\-]+)/$

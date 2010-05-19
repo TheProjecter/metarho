@@ -24,7 +24,8 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^$', 'metarho.blog.views.post_all', name='site-index'),
     (r'^admin/', include(admin.site.urls)),
-    (r'section/', include("metarho.ontology.urls", namespace="catalog")),
+    (r'tag/', include("metarho.ontology.tag_urls", namespace="topic")),
+    (r'topic/', include("metarho.ontology.tag_urls", namespace="topic")),
     (r'^', include("metarho.blog.urls", namespace="blog")),
 )
 
