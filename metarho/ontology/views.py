@@ -14,10 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from django.shortcuts import get_object_or_404
+
 from metarho import render_with_context
 from metarho.ontology.models import Topic
 from metarho.ontology.models import Tag
 
+# Tag Related Stuff
 def tags(request):
     """Returns a list of all tags for display and linking."""
 
@@ -36,8 +39,17 @@ def tag(request, slug):
     :param slug: Tag slug to return content for.
 
     """
-    pass
+    tag = get_object_or_404(Tag, slug=slug)
 
+    catalog = tag.tagcatalog_set.all() # @TODO Change to published Only!!
+
+    return render_with_context(request, 'ontology/tag_items.xhtml', {
+        'title': "Items Under %s" % tag.text,
+        'tag': tag,
+        'catalog': catalog,
+        })
+
+# Topic Related Stuff
 def topics(request):
     """Returns a list of all top level topics for display and linking."""
 
