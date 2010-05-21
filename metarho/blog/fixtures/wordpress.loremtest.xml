@@ -49,6 +49,7 @@
 	<wp:tag><wp:tag_slug>nunc</wp:tag_slug><wp:tag_name><![CDATA[nunc]]></wp:tag_name></wp:tag>
 	<wp:tag><wp:tag_slug>phasellus-congue</wp:tag_slug><wp:tag_name><![CDATA[Phasellus congue]]></wp:tag_name></wp:tag>
 	<wp:tag><wp:tag_slug>ultricies</wp:tag_slug><wp:tag_name><![CDATA[ultricies]]></wp:tag_name></wp:tag>
+        <wp:tag><wp:tag_slug>shared-test</wp:tag_slug><wp:tag_name><![CDATA[shared test]]></wp:tag_name></wp:tag>
 	<cloud domain='streamweaver.wordpress.com' port='80' path='/?rsscloud=notify' registerProcedure='' protocol='http-post' />
 <image>
 		<url>http://www.gravatar.com/blavatar/888659625c7c7b1c713a93760a779370?s=96&#038;d=http://s2.wp.com/i/buttonw-com.png</url>
@@ -78,6 +79,10 @@
 		<category domain="tag"><![CDATA[nunc]]></category>
 
 		<category domain="tag" nicename="nunc"><![CDATA[nunc]]></category>
+
+                <category domain="tag"><![CDATA[shared test]]></category>
+
+		<category domain="tag" nicename="shared-test"><![CDATA[shared-test]]></category>
 
 <guid isPermaLink="false">http://streamweaver.wordpress.com/?p=7</guid>
 <description></description>
@@ -115,6 +120,10 @@ Phasellus condimentum nunc ut nunc feugiat hendrerit. Aliquam nunc dui,  interdu
 		<category><![CDATA[Uncategorized]]></category>
 
 		<category domain="category" nicename="uncategorized"><![CDATA[Uncategorized]]></category>
+
+                <category domain="tag"><![CDATA[shared test]]></category>
+
+		<category domain="tag" nicename="shared-test"><![CDATA[shared-test]]></category>
 
 <guid isPermaLink="false">http://streamweaver.wordpress.com/?p=10</guid>
 <description></description>
@@ -158,6 +167,10 @@ Phasellus condimentum nunc ut nunc feugiat hendrerit. Aliquam nunc dui,  interdu
 		<category domain="tag"><![CDATA[Phasellus congue]]></category>
 
 		<category domain="tag" nicename="phasellus-congue"><![CDATA[Phasellus congue]]></category>
+
+                <category domain="tag"><![CDATA[shared test]]></category>
+
+		<category domain="tag" nicename="shared-test"><![CDATA[shared-test]]></category>
 
 <guid isPermaLink="false"></guid>
 <description></description>
@@ -238,6 +251,10 @@ Phasellus condimentum nunc ut nunc feugiat hendrerit. Aliquam nunc dui,  interdu
 		<category domain="tag"><![CDATA[fringilla at nibh]]></category>
 
 		<category domain="tag" nicename="fringilla-at-nibh"><![CDATA[fringilla at nibh]]></category>
+
+                <category domain="tag"><![CDATA[shared test]]></category>
+
+		<category domain="tag" nicename="shared-test"><![CDATA[shared-test]]></category>
 
 <guid isPermaLink="false">http://streamweaver.wordpress.com/?p=4</guid>
 <description></description>

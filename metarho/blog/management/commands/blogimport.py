@@ -17,6 +17,7 @@
 from optparse import make_option
 
 from django.core.management.base import BaseCommand
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 
 from metarho.blog.importer import WordPressExportParser
@@ -44,4 +45,3 @@ class Command(BaseCommand):
             return User.objects.get(username=username)
         except User.DoesNotExist:
             raise ObjectDoesNotExist('User %s does not exist!' % username)
-    

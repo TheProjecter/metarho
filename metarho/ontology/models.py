@@ -17,6 +17,7 @@
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
+
 class Tag(models.Model):
     '''
     Tags for blog entries that can cross relate information between users
@@ -71,6 +72,9 @@ class TagCatalog(models.Model):
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
     content_object = generic.GenericForeignKey('content_type', 'object_id')
+
+    def __unicode__(self):
+        return "%s" % self.tag.text
 
 class Topic(models.Model):
     '''
