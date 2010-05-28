@@ -43,10 +43,12 @@ def tag(request, slug):
 
     catalog = tag.tagcatalog_set.all() # @TODO Change to published Only!!
 
+    contentlist = [item for item in catalog if item.content_object.status == 'P']
+
     return render_with_context(request, 'ontology/tag_items.xhtml', {
         'title': "Items Under %s" % tag.text,
         'tag': tag,
-        'catalog': catalog,
+        'contentlist': contentlist,
         })
 
 # Topic Related Stuff

@@ -3,5 +3,7 @@
 {% block content-title %}{{ title }}{% endblock %}
 
 {% block content-body %}
-	Stuff Will go here.
+    {% for item in contentlist %}
+	{{ item.content_object.title }}
+    {% endfor %}
 {% endblock %}
