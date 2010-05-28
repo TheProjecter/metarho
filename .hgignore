@@ -5,3 +5,4 @@ glob:externals/pagination/*
 glob:doc/_build/*
 glob:externals/mimeparse.py
 glob:db/metarho.db-journal
+glob:media/style/images/LibraryThing_export.csv
