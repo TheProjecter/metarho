@@ -41,7 +41,7 @@ def tag(request, slug):
     """
     tag = get_object_or_404(Tag, slug=slug)
 
-    catalog = tag.tagcatalog_set.all() # @TODO Change to published Only!!
+    catalog = tag.taggeditem_set.all() # @TODO Change to published Only!!
 
     contentlist = [item for item in catalog if item.content_object.status == 'P']
 

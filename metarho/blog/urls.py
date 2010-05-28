@@ -22,5 +22,6 @@ urlpatterns = patterns('metarho.blog.views',
     url(r'^(?P<year>\d{4})/(?P<month>\w{3})/$', 'post_month', name='list-month'),  
     url(r'^(?P<year>\d{4})/$', 'post_year', name='list-year'),
     url(r'^archive/$', 'archive_list', name='archive-list'),
+    url(r'^tag/(?P<slug>[0-9A-Za-z-]+)/', 'tag_list', name='tag-list'),
     url(r'^/?$', 'post_all', name='index'),
 )

@@ -22,16 +22,11 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
 from django.contrib.contenttypes import generic
 
+from metarho import PUBLISHED_STATUS
+from metarho import PUB_STATUS
 from metarho import unique_slugify
 from metarho.ontology.models import TopicCatalog
-from metarho.ontology.models import TagCatalog
-
-PUBLISHED_STATUS = 'P'
-UNPUBLISHED_STATUS = 'U'
-POST_STATUS = (
-               (PUBLISHED_STATUS, 'Published'),
-               (UNPUBLISHED_STATUS, 'Unpublished'),
-)
+from metarho.ontology.models import TaggedItem
 
 # CUSTOM MANAGERS
 
@@ -64,13 +59,13 @@ class Post(models.Model):
     teaser = models.TextField(null=True, blank=True)
     pd_help = 'Date to publish.'
     pub_date = models.DateTimeField(help_text=pd_help, null=True, blank=True)
-    status = models.CharField(max_length=1, choices=POST_STATUS)
+    status = models.CharField(max_length=1, choices=PUB_STATUS)
     date_created = models.DateTimeField(null=False, blank=False, auto_now_add=True)
     date_modified = models.DateTimeField(null=False, blank=False, auto_now=True, auto_now_add=True)
 
     # Reverse Generic Relationships
     topics = generic.GenericRelation(TopicCatalog)
-    tags = generic.GenericRelation(TagCatalog)
+    tags = generic.GenericRelation(TaggedItem)
     
     objects = PostManager()
 

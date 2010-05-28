@@ -14,12 +14,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-
 import re
 from django.template.defaultfilters import slugify
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+
+# Some Constants I'll use for various content.
+PUBLISHED_STATUS = 'P'
+UNPUBLISHED_STATUS = 'U'
+PUB_STATUS = (
+               (PUBLISHED_STATUS, 'Published'),
+               (UNPUBLISHED_STATUS, 'Unpublished'),
+)
 
 # Better way fo dealing with slugs
 #

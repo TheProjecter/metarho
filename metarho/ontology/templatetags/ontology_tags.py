@@ -17,13 +17,13 @@
 from django import template
 
 from metarho.ontology.models import Tag
-from metarho.ontology.models import TagCatalog
+from metarho.ontology.models import TaggedItem
 
 register = template.Library()
 
 @register.inclusion_tag('ontology/snippets/tag_cloud.xhtml')
 def tag_cloud():
     '''Produces a tag cloud of tags used in the database.'''
-    tags = Tag.objects.order_by('text').filter(tagcatalog__isnull=False)
-    total = TagCatalog.objects.all().count()
+    tags = Tag.objects.order_by('text').filter(taggeditem__isnull=False)
+    total = TaggedItem.objects.all().count()
     return {'tags': tags, 'total': total}

@@ -19,6 +19,7 @@ import time
 
 from django.http import Http404
 from django.core.urlresolvers import reverse
+from django.shortcuts import get_object_or_404
 
 from metarho.blog.decorators import wp_post_redirect
 from metarho.decorators import format_req
@@ -26,10 +27,11 @@ from metarho import render_with_context
 from metarho.blog.models import Post
 from metarho.blog.feeds import PostsFeedAtom
 from metarho.blog.feeds import feed_render
+from metarho.ontology.models import Tag
 
 # All Posts List Methods.
 def post_all_feed(request):
-    '''Returns a Feed for all posts'''
+    """Returns a Feed for all posts"""
 
     feed = PostsFeedAtom('myslug', request)
     feed.items = Post.objects.published().order_by('-pub_date')
@@ -39,7 +41,7 @@ def post_all_feed(request):
 @wp_post_redirect
 @format_req('rss', post_all_feed)
 def post_all(request):
-    '''Returns all User Blogs'''
+    """Returns all User Blogs"""
     posts = Post.objects.published()
     alt_links = [
     {'type': 'application/atom+xml', 'title': 'Atom Feed', 'href': '%s?format=rss' % reverse('blog:index')}
@@ -52,7 +54,7 @@ def post_all(request):
             })
 
 def post_year_feed(request, year):
-    '''Returns a Feed for particular year.'''
+    """Returns a Feed for particular year."""
 
     feed = PostsFeedAtom('myslug', request)
     feed.link = reverse('blog:list-year', args=[year])
@@ -66,7 +68,7 @@ def post_year_feed(request, year):
 
 @format_req('rss', post_year_feed)
 def post_year(request, year):
-    '''Returns all posts for a particular year.'''
+    """Returns all posts for a particular year."""
     tt = time.strptime('-'.join([year]), '%Y')
     date = datetime.date(*tt[:3])
     posts = Post.objects.published().filter(pub_date__year=date.year)
@@ -78,7 +80,7 @@ def post_year(request, year):
 
 
 def post_month_feed(request, year, month):
-    '''Returns an atom feed for the month.'''
+    """Returns an atom feed for the month."""
     feed = PostsFeedAtom('myslug', request)
 
     tt = time.strptime('-'.join([year, month]), '%Y-%b')
@@ -90,7 +92,7 @@ def post_month_feed(request, year, month):
 
 @format_req('rss', post_month_feed)
 def post_month(request, year, month):
-    '''Returns all posts for a particular month.'''
+    """Returns all posts for a particular month."""
     tt = time.strptime('-'.join([year, month]), '%Y-%b')
     date = datetime.date(*tt[:3])
     posts = Post.objects.published().filter(pub_date__year=date.year, 
@@ -102,7 +104,7 @@ def post_month(request, year, month):
             })
 
 def post_day_feed(request, year, month, day):
-    '''Produces a feed for the post daily list.'''
+    """Produces a feed for the post daily list."""
 
     feed = PostsFeedAtom('myslug', request)
 
@@ -115,7 +117,7 @@ def post_day_feed(request, year, month, day):
 
 @format_req('rss', post_day_feed)
 def post_day(request, year, month, day):
-    '''Returns all posts for a particular day.'''
+    """Returns all posts for a particular day."""
     tt = time.strptime('-'.join([year, month, day]), '%Y-%b-%d')
     date = datetime.date(*tt[:3])
     posts = Post.objects.published().filter(pub_date__year=date.year, 
@@ -128,7 +130,7 @@ def post_day(request, year, month, day):
 
 # Detail Views
 def post_detail(request, year, month, day, slug):
-    ''' Returns an individual post.'''
+    """Returns an individual post."""
     tt = time.strptime('-'.join([year, month, day]), '%Y-%b-%d')
     date = datetime.date(*tt[:3])
     try:
@@ -143,9 +145,19 @@ def post_detail(request, year, month, day, slug):
             })
 
 def archive_list(request):
-    '''Returns a list of months by year with published posts.'''
+    """Returns a list of months by year with published posts."""
     dates = Post.objects.published().order_by('pub_date').dates('pub_date', 'month')
     return render_with_context(request, 'blog/archive_list.xhtml', {
             'dates': dates,
             'title': 'Post Archive',
             })
+
+# Views related to blogpost topics only.
+def tag_list(request, slug):
+    """Returns blog entries for this tag slug."""
+    tag = get_object_or_404(Tag, slug=slug)
+    posts = Post.objects.published().filter(tags__tag__slug=slug)
+    return render_with_context(request, 'blog/post_list.xhtml', {
+        'posts': posts,
+        'title': 'Posts tagged under %s' % tag.text,
+        })

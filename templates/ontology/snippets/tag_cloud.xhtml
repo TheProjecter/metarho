@@ -7,7 +7,7 @@
     <h2>Tags</h2>
         {% for tag in tags %}
           <a href="{% url tag:detail tag.slug %}"
-          title="{{ tag.tagcatalog_set.count }} posts"
+          title="{{ tag.taggeditem_set.count }} posts"
           style="font-size: {{ tag.weight|add:"90" }}%">
           {{ tag.text }}</a>{% ifnotequal forloop.revcounter0 0 %}, {% endifnotequal %}
         {% empty %}

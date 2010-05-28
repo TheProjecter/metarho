@@ -37,8 +37,8 @@ class Tag(models.Model):
 
     def weight(self):
         """Returns the ratio this tag to total tags on items."""
-        all_tags = TagCatalog.objects.all().count()
-        this_tag = self.tagcatalog_set.count()
+        all_tags = TaggedItem.objects.all().count()
+        this_tag = self.taggeditem_set.count()
 
         if all_tags == 0 or this_tag == 0: # make the return sensible
             return 0
@@ -59,7 +59,7 @@ class Tag(models.Model):
     class Meta:
         ordering = ['text']
 
-class TagCatalog(models.Model):
+class TaggedItem(models.Model):
     """
     Joining model between Tagged items and Tags.  I'm finding this more
     appealing both for performance issues and because tag slugs will be easier

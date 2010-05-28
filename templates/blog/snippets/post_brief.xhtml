@@ -14,7 +14,7 @@
             {% if post.tags.all %}
             Tags:
             {% for item in post.tags.all %}
-            <a href="">{{ item.tag.text }}</a>{% ifnotequal forloop.revcounter0 0 %},{% endifnotequal %}
+            <a href="{% url blog:tag-list item.tag.slug %}">{{ item.tag.text }}</a>{% ifnotequal forloop.revcounter0 0 %},{% endifnotequal %}
             {% endfor %}
             &laquo;&raquo;
             {% endif %}

@@ -28,7 +28,7 @@ from metarho.blog.models import PostMeta
 from metarho.ontology.models import Topic
 from metarho.ontology.models import TopicCatalog
 from metarho.ontology.models import Tag
-from metarho.ontology.models import TagCatalog
+from metarho.ontology.models import TaggedItem
 from metarho.sitemeta.models import SiteInformation
 
    
@@ -198,5 +198,5 @@ class WordPressExportParser:
                     tc.save()
                 elif pc.attrib['domain'] == 'tag':
                     t = Tag.objects.get(slug=pc.attrib['nicename'])
-                    tc = TagCatalog(content_object=post, tag=t)
+                    tc = TaggedItem(content_object=post, tag=t)
                     tc.save()
